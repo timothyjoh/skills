@@ -59,7 +59,7 @@ The skills shell out to a few tools; each `SKILL.md` names what it needs under P
 
 - [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) on `PATH` (`brew install yt-dlp`). No YouTube API key.
 - Node 18 or newer, for the bundled scripts.
-- `ffmpeg`, `python3`, and `curl` for the media skills. `inworld-tts` needs `INWORLD_API_KEY` in the environment; `chatterbox-tts` needs a local Chatterbox install; `browser-tour` needs the Claude-in-Chrome extension.
+- `ffmpeg` and `python3` for the media skills. `tts-voice` needs a local Chatterbox install; `browser-tour` needs the Claude-in-Chrome extension.
 
 ## Reference
 
@@ -101,10 +101,9 @@ Producing audio and narrated walkthroughs.
 
 **Model-invoked**
 
-- **[storytime](./skills/media/storytime/SKILL.md)**: Render a story as a multi-voice MP3: tag the prose by speaker, cast Inworld voices, stitch with ffmpeg. Docs: [storytime](./docs/media/storytime.md).
+- **[storytime](./skills/media/storytime/SKILL.md)**: Render a story as a multi-voice MP3: tag the prose by speaker, cast a local voice per character, stitch with ffmpeg. Docs: [storytime](./docs/media/storytime.md).
 - **[browser-tour](./skills/media/browser-tour/SKILL.md)**: Drive Claude-in-Chrome through a narrated, pausing tour: research, product wizard, plan narration, or post-implementation demo. Docs: [browser-tour](./docs/media/browser-tour.md).
-- **[inworld-tts](./skills/media/inworld-tts/SKILL.md)**: Premium cloud text-to-speech, 65+ voices. Needs `INWORLD_API_KEY`. Docs: [inworld-tts](./docs/media/inworld-tts.md).
-- **[chatterbox-tts](./skills/media/chatterbox-tts/SKILL.md)**: Free local text-to-speech with voice cloning. Needs a local Chatterbox install. Docs: [chatterbox-tts](./docs/media/chatterbox-tts.md).
+- **[tts-voice](./skills/media/tts-voice/SKILL.md)**: Free local text-to-speech with voice cloning, Chatterbox under the hood. Needs a local Chatterbox install. Docs: [tts-voice](./docs/media/tts-voice.md).
 
 ## Developing
 

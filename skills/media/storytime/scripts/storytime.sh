@@ -1,23 +1,25 @@
 #!/usr/bin/env bash
-# storytime: Multi-voice story renderer using Inworld TTS + ffmpeg.
+# storytime: Multi-voice story renderer using the tts-voice skill + ffmpeg.
 # Usage: storytime <script-file> <cast-file> [-o output.mp3] [--pause MS]
 #
 # Script format (one line per block):
 #   [CHARACTER] Dialogue or narration text here.
 #
-# Cast file (JSON mapping character names to Inworld voice IDs):
-#   { "NARRATOR": "Elizabeth", "RITA": "Olivia", "RODDY": "Craig" }
+# Cast file (JSON mapping character names to tts-voice voice names, "default",
+# or a path to a reference WAV):
+#   { "NARRATOR": "default", "RITA": "glados", "RODDY": "/path/roddy.wav" }
 #
 # Output: stitched MP3 file with natural pauses between speakers.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-INWORLD_TTS="${STORYTIME_INWORLD_TTS:-$SCRIPT_DIR/../../inworld-tts/scripts/inworld-tts.sh}"
-if [[ ! -x "$INWORLD_TTS" ]]; then
-  echo "Error: inworld-tts.sh not found at $INWORLD_TTS. Install the inworld-tts skill beside storytime, or set STORYTIME_INWORLD_TTS." >&2
+TTS="${STORYTIME_TTS:-$SCRIPT_DIR/../../tts-voice/scripts/tts-voice.sh}"
+if [[ ! -x "$TTS" ]]; then
+  echo "Error: tts-voice.sh not found at $TTS. Install the tts-voice skill beside storytime, or set STORYTIME_TTS." >&2
   exit 2
 fi
+DEVICE_FLAG="--cpu"
 
 PAUSE_MS=400
 OUTPUT=""
@@ -28,13 +30,15 @@ CAST_FILE=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --pause)  PAUSE_MS="$2"; shift 2 ;;
+    --mps)    DEVICE_FLAG="--mps"; shift ;;
     -o|--output) OUTPUT="$2"; shift 2 ;;
     --help|-h)
-      echo "Usage: storytime <script-file> <cast-file> [-o output.mp3] [--pause MS]"
+      echo "Usage: storytime <script-file> <cast-file> [-o output.mp3] [--pause MS] [--mps]"
       echo ""
       echo "Script format: [CHARACTER] Line of dialogue or narration."
-      echo "Cast file: JSON mapping character names to Inworld voice IDs."
+      echo "Cast file: JSON mapping character names to tts-voice names, default, or a .wav path."
       echo "--pause: Silence between speakers in ms (default: 400)"
+      echo "--mps:   Use Apple Silicon GPU for synthesis"
       exit 0 ;;
     -*)       echo "Unknown option: $1" >&2; exit 1 ;;
     *)
@@ -104,7 +108,7 @@ import json, sys
 cast = json.load(open(sys.argv[1]))
 char = sys.argv[2].upper()
 # Try exact match, then fallback to NARRATOR, then default
-voice = cast.get(char, cast.get('NARRATOR', 'Elizabeth'))
+voice = cast.get(char, cast.get('NARRATOR', 'default'))
 print(voice)
 " "$CAST_FILE" "$CHARACTER")
 
@@ -113,8 +117,12 @@ print(voice)
 
   echo "  [$CHARACTER → $VOICE] ${TEXT:0:60}..." >&2
 
-  # Generate TTS clip
-  "$INWORLD_TTS" "$TEXT" --voice "$VOICE" -o "$CLIP_PATH" >/dev/null
+  # Generate TTS clip: a value ending in .wav is a reference file, otherwise a voice name
+  if [[ "$VOICE" == *.wav ]]; then
+    "$TTS" "$TEXT" --ref "$VOICE" $DEVICE_FLAG -o "$CLIP_PATH" >/dev/null
+  else
+    "$TTS" "$TEXT" --voice "$VOICE" $DEVICE_FLAG -o "$CLIP_PATH" >/dev/null
+  fi
 
   # Add clip + pause to concat list
   echo "file '$CLIP_PATH'" >> "$CONCAT_LIST"

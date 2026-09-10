@@ -26,6 +26,6 @@ Releases use changesets: add one under `.changeset/` with every user-visible cha
 
 Vendored third-party skills carry an `ORIGIN.md` naming the upstream commit and license, and are kept byte-identical to upstream: never edit them in place, re-vendor instead. They are exempt from the em-dash rule below.
 
-Skills that depend on a sibling skill's script (storytime on inworld-tts, browser-tour on either TTS skill) resolve it relative to their own folder (`../<skill>/scripts/`), so the dependency holds wherever the bucket is installed as a set; each such `SKILL.md` names the dependency under Prerequisites and offers an environment-variable override. Secrets never go in a file: a script that needs a credential reads it from an environment variable and fails with the variable's name when it is missing.
+Skills that depend on a sibling skill's script (storytime and browser-tour on tts-voice) resolve it relative to their own folder (`../<skill>/scripts/`), so the dependency holds wherever the bucket is installed as a set; each such `SKILL.md` names the dependency under Prerequisites and offers an environment-variable override. Secrets never go in a file: a script that needs a credential reads it from an environment variable and fails with the variable's name when it is missing.
 
 No em-dashes anywhere in this repo's prose (`SKILL.md` files, docs, `README.md`, `CHANGELOG.md`, changesets, code comments). Where a sentence reaches for one, rewrite it with a comma, colon, period, parentheses, or a conjunction.

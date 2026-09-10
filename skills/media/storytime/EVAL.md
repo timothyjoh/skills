@@ -16,13 +16,13 @@
 
 ### Case 2: Cast file creation with appropriate voices
 - **Input:** "Cast voices for a story with: a narrator, a young British woman, an old villain, and a quirky sidekick"
-- **Expect:** Creates JSON cast file mapping character names to appropriate Inworld voices (e.g., Elizabeth for narrator, Wendy for Rita, Hades for villain, Julia for quirky sidekick)
-- **Verify:** Voice selections match character descriptions based on the Inworld voice catalog
+- **Expect:** Creates JSON cast file mapping character names to appropriate tts-voice voices from `--list-voices`, with `default` for the narrator when no fitting clone exists
+- **Verify:** Voice selections match character descriptions from the available voices
 - **Type:** llm-judge
 
 ### Case 3: Full pipeline knowledge
 - **Input:** "I have a story.script and cast.json ready. How do I render?"
-- **Expect:** Knows the render command: `scripts/storytime.sh story.script cast.json -o story.mp3`, understands pause flag for pacing, knows to deliver via message send with filePath
+- **Expect:** Knows the render command: `scripts/storytime.sh story.script cast.json -o story.mp3`, understands pause flag for pacing, knows to hand the file to the user
 - **Verify:** Correct script path, syntax, and delivery method
 - **Type:** llm-judge
 
@@ -34,7 +34,7 @@
 
 ## Quality Criteria
 - [ ] Correctly converts prose to tagged script format (one tag per line, faithful to text)
-- [ ] Matches Inworld voices to character descriptions appropriately
+- [ ] Matches available voices to character descriptions appropriately
 - [ ] Knows the full pipeline: script → cast → render → deliver
 
 ## Anti-Patterns

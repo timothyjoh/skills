@@ -8,7 +8,7 @@ Ask to be walked through, shown around, or given a tour, or the agent reaches fo
 
 ## Prerequisites
 
-The Claude-in-Chrome extension and its MCP tools. Audio narration is optional and uses [chatterbox-tts](./chatterbox-tts.md) or [inworld-tts](./inworld-tts.md) installed beside this skill.
+The Claude-in-Chrome extension and its MCP tools. Audio narration is optional and uses [tts-voice](./tts-voice.md) installed beside this skill.
 
 ## Never preview the next stop
 

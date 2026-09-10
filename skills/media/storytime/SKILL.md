@@ -1,15 +1,15 @@
 ---
 name: storytime
-description: Multi-voice audio story renderer. Converts stories into scripts with character tags, assigns Inworld TTS voices, stitches into a single MP3. Triggers on "storytime", "read this story", "make an audio drama". Use for bedtime stories, audio dramas, multi-character narration, or digests with voice variety. Uses Inworld TTS (about $5 per million characters); for single-voice narration call inworld-tts directly.
+description: Multi-voice audio story renderer. Converts a story into a script with character tags, casts a local cloned voice per character, and stitches the lines into a single MP3. Triggers on "storytime", "read this story", "make an audio drama". Use for bedtime stories, audio dramas, multi-character narration, or digests with voice variety. Free and offline via the tts-voice skill.
 metadata:
   hermes:
     tags: [tts, audio, storytelling, multi-voice, drama]
-    related_skills: [inworld-tts, chatterbox-tts]
+    related_skills: [tts-voice]
 ---
 
 # Storytime
 
-Render multi-voice audio stories using Inworld TTS and ffmpeg.
+Render multi-voice audio stories with the `tts-voice` skill and ffmpeg.
 
 ## Pipeline
 
@@ -18,7 +18,7 @@ Story input (URL / paste / generate)
     v
 Script conversion (prose to tagged script)
     v
-Voice casting (assign Inworld voices to characters)
+Voice casting (one tts-voice voice per character)
     v
 Render (storytime.sh generates and stitches audio)
     v
@@ -27,8 +27,9 @@ Deliver (hand the MP3 to the user)
 
 ## Prerequisites
 
-- The `inworld-tts` skill installed beside this one (the render script looks for `../inworld-tts/scripts/inworld-tts.sh`; override with `STORYTIME_INWORLD_TTS=<path>`), with `INWORLD_API_KEY` exported. See that skill for setup.
+- The `tts-voice` skill installed beside this one, set up per its `SKILL.md`. The render script looks for `../tts-voice/scripts/tts-voice.sh`; override with `STORYTIME_TTS=<path>`.
 - `ffmpeg` and `python3` on `PATH`.
+- Synthesis is local and slow on CPU: budget a few seconds per line, or pass `--mps` on Apple Silicon.
 
 ## Step 1: Convert story to script
 
@@ -54,43 +55,31 @@ Save as a `.script` file (plain text).
 
 ## Step 2: Create the cast file
 
-JSON mapping character names to Inworld voice IDs:
+JSON mapping character names to voices. A value is a `tts-voice` voice name (any WAV in its voices directory), `default` for the model's built-in voice, or a path to a reference WAV:
 
 ```json
 {
-  "NARRATOR": "Elizabeth",
-  "RITA": "Wendy",
-  "RODDY": "Craig",
-  "TOAD": "Hades",
-  "SID": "Edward"
+  "NARRATOR": "default",
+  "RITA": "glados",
+  "RODDY": "wheatley",
+  "TOAD": "/path/to/toad.wav"
 }
 ```
 
-Save as a `.cast.json` file.
-
-### Voice selection guide
-
-See the `inworld-tts` skill for the full voice catalog (`--list-voices`).
-
-**Quick picks:**
-- Narrators: Elizabeth (calm), Ronald (dramatic), Carter (intense)
-- British female: Olivia (young), Wendy (posh)
-- British male: Craig (posh), Ronald (deep), Clive (cordial)
-- Villains: Hades (commanding), Dominus (robotic)
-- Comic: Julia (quirky), Pixie (cartoon), Edward (streetwise)
-- Warm: Ashley, Blake, Luna
+Save as a `.cast.json` file. Run `../tts-voice/scripts/tts-voice.sh --list-voices` to see what is available; an unlisted character falls back to the NARRATOR voice.
 
 ## Step 3: Render
 
 ```bash
 scripts/storytime.sh story.script cast.json -o story.mp3
 scripts/storytime.sh story.script cast.json --pause 500   # longer pauses
+scripts/storytime.sh story.script cast.json --mps         # Apple Silicon GPU
 ```
 
 The script:
 1. Reads each tagged line
 2. Looks up the voice from the cast file
-3. Calls `inworld-tts` for each line
+3. Calls `tts-voice` for each line
 4. Adds silence between speakers (default 400 ms)
 5. Stitches everything with ffmpeg
 
@@ -98,21 +87,9 @@ The script:
 
 Hand the MP3 to the user by whatever the host supports: `SendUserFile` in Claude Code, a file attachment on a chat platform, or the path on disk.
 
-## Full example
-
-```bash
-# 1. Write the script from a story URL or text (prose to .script format)
-# 2. Create the cast mapping
-echo '{"NARRATOR":"Elizabeth","RITA":"Wendy","RODDY":"Craig"}' > /tmp/cast.json
-# 3. Render
-scripts/storytime.sh /tmp/story.script /tmp/cast.json -o /tmp/story.mp3
-# 4. Deliver the file
-```
-
 ## Tips
 
-- Short lines (one or two sentences) per tag produce better pacing
+- Short lines (one or two sentences) per tag produce better pacing and keep each synthesis call fast
 - Split long narration into multiple `[NARRATOR]` lines
 - Use `--pause 600` for bedtime stories (slower pace)
 - Use `--pause 250` for rapid dialogue scenes
-- About 8,000 characters is 10 minutes of audio and about $0.04

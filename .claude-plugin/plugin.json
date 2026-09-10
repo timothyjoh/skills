@@ -17,8 +17,8 @@
     "channel-to-skill",
     "writing",
     "media",
-    "tts",
-    "browser-tour"
+    "browser-tour",
+    "tts-voice"
   ],
   "skills": [
     "./skills/knowledge/channel-to-skill",
@@ -27,7 +27,6 @@
     "./skills/writing/asd-ste100",
     "./skills/media/storytime",
     "./skills/media/browser-tour",
-    "./skills/media/inworld-tts",
-    "./skills/media/chatterbox-tts"
+    "./skills/media/tts-voice"
   ]
 }
