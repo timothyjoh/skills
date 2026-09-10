@@ -1,0 +1,3 @@
+interface:
+  display_name: "Storytime"
+  short_description: "Render a multi-voice audio story to MP3"

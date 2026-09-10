@@ -55,10 +55,11 @@ It writes the skills into your repo as ordinary files you own and can edit. Pull
 
 ## Prerequisites
 
-The knowledge skills shell out to two tools:
+The skills shell out to a few tools; each `SKILL.md` names what it needs under Prerequisites. Across the set:
 
 - [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) on `PATH` (`brew install yt-dlp`). No YouTube API key.
 - Node 18 or newer, for the bundled scripts.
+- `ffmpeg`, `python3`, and `curl` for the media skills. `inworld-tts` needs `INWORLD_API_KEY` in the environment; `chatterbox-tts` needs a local Chatterbox install; `browser-tour` needs the Claude-in-Chrome extension.
 
 ## Reference
 
@@ -87,7 +88,23 @@ Explaining things: to a reader who is lost, or to one who needs a picture.
 **Model-invoked**
 
 - **[show-me](./skills/writing/show-me/SKILL.md)**: Explain the current topic visually with the smallest view that makes the point: pseudocode, a call tree, a component or file tree, Mermaid, a `diff`, or one focused HTML file. Docs: [show-me](./docs/writing/show-me.md).
+- **[asd-ste100](./skills/writing/asd-ste100/SKILL.md)**: Rewrite English so a reader who cannot ask a clarifying question cannot misread it, on the principles of the ASD-STE100 standard. Vendored (MIT) from [danyuchn/asd-ste100-skill](https://github.com/danyuchn/asd-ste100-skill); `wat` depends on it. Docs: [asd-ste100](./docs/writing/asd-ste100.md).
 - **[wat](./skills/writing/wat/SKILL.md)**: Re-explain the previous answer with one picture and plain words. Fires on a bare "wat", on "ELI5", or when the reader says they are lost. Docs: [wat](./docs/writing/wat.md).
+
+### Media
+
+Producing audio and narrated walkthroughs.
+
+**User-invoked**
+
+- None yet.
+
+**Model-invoked**
+
+- **[storytime](./skills/media/storytime/SKILL.md)**: Render a story as a multi-voice MP3: tag the prose by speaker, cast Inworld voices, stitch with ffmpeg. Docs: [storytime](./docs/media/storytime.md).
+- **[browser-tour](./skills/media/browser-tour/SKILL.md)**: Drive Claude-in-Chrome through a narrated, pausing tour: research, product wizard, plan narration, or post-implementation demo. Docs: [browser-tour](./docs/media/browser-tour.md).
+- **[inworld-tts](./skills/media/inworld-tts/SKILL.md)**: Premium cloud text-to-speech, 65+ voices. Needs `INWORLD_API_KEY`. Docs: [inworld-tts](./docs/media/inworld-tts.md).
+- **[chatterbox-tts](./skills/media/chatterbox-tts/SKILL.md)**: Free local text-to-speech with voice cloning. Needs a local Chatterbox install. Docs: [chatterbox-tts](./docs/media/chatterbox-tts.md).
 
 ## Developing
 

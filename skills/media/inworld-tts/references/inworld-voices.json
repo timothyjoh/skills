@@ -1,0 +1,454 @@
+[
+  {
+    "name": "Loretta",
+    "description": "Inviting, folksy Southern female voice, perfect for cooking shows"
+  },
+  {
+    "name": "Darlene",
+    "description": "Soothing, comforting Southern female voice, ideal for bedtime sto"
+  },
+  {
+    "name": "Marlene",
+    "description": "Friendly, relaxed Southern female voice, ideal for home-style coo"
+  },
+  {
+    "name": "Hank",
+    "description": "Warm, laid-back Southern male voice, ideal for travel documentari"
+  },
+  {
+    "name": "Evelyn",
+    "description": "A gentle and intimate female voice, ideal for personal ASMR conte"
+  },
+  {
+    "name": "Celeste",
+    "description": "Soft, whispery female voice, ideal for ASMR videos, soothing lull"
+  },
+  {
+    "name": "Pippa",
+    "description": "Friendly and casual Australian female voice, ideal for relaxed in"
+  },
+  {
+    "name": "Tessa",
+    "description": "Upbeat, conversational Australian female voice, perfect for lifes"
+  },
+  {
+    "name": "Liam",
+    "description": "Upbeat, motivating Australian male voice, perfect for energizing"
+  },
+  {
+    "name": "Callum",
+    "description": "Casual and friendly Australian male voice, ideal for informal ins"
+  },
+  {
+    "name": "Hamish",
+    "description": "Friendly and casual Australian male voice, ideal for character-dr"
+  },
+  {
+    "name": "Abby",
+    "description": "Bright, eager American female child voice, ideal for animated cha"
+  },
+  {
+    "name": "Graham",
+    "description": "Profound, authoritative British male voice, perfect for historica"
+  },
+  {
+    "name": "Rupert",
+    "description": "Resonant, commanding British male voice, ideal for motivational s"
+  },
+  {
+    "name": "Mortimer",
+    "description": "Gravelly, aggressive male character voice, ideal for fantasy vill"
+  },
+  {
+    "name": "Snik",
+    "description": "Hoarse, cunning male voice, perfect for devious goblin roles, fan"
+  },
+  {
+    "name": "Anjali",
+    "description": "A confident and articulate Indian female voice, ideal for profess"
+  },
+  {
+    "name": "Saanvi",
+    "description": "Crisp, articulate Indian female voice, ideal for dynamic e-learni"
+  },
+  {
+    "name": "Arjun",
+    "description": "Clear, composed Indian male voice, well-suited for instructional"
+  },
+  {
+    "name": "Claire",
+    "description": "Warm, gentle Eastern European female voice, ideal for bedtime sto"
+  },
+  {
+    "name": "Oliver",
+    "description": "Neutral and clear male voice, ideal for public announcements and"
+  },
+  {
+    "name": "Simon",
+    "description": "Articulate, insightful male voice, perfect for corporate presenta"
+  },
+  {
+    "name": "Elliot",
+    "description": "A calm, steady male voice, suitable for nature documentaries, gen"
+  },
+  {
+    "name": "James",
+    "description": "Vibrant, expressive male voice, perfect for animated video conten"
+  },
+  {
+    "name": "Serena",
+    "description": "Soft, nurturing female voice, perfect for mindfulness sessions, n"
+  },
+  {
+    "name": "Gareth",
+    "description": "Soothing, gentle male voice, ideal for guided meditations, mindfu"
+  },
+  {
+    "name": "Vinny",
+    "description": "Gritty, assertive New York male voice, perfect for crime dramas,"
+  },
+  {
+    "name": "Lauren",
+    "description": "Confident, friendly American female voice, ideal for corporate pr"
+  },
+  {
+    "name": "Jessica",
+    "description": "Encouraging, articulate American female voice, perfect for self-h"
+  },
+  {
+    "name": "Ethan",
+    "description": "Assured, precise male voice, perfect for tech tutorials, detailed"
+  },
+  {
+    "name": "Tyler",
+    "description": "Authoritative, insightful male voice, ideal for tech explainer vi"
+  },
+  {
+    "name": "Jason",
+    "description": "Lucid, engrossing male voice, ideal for tech tips, creative produ"
+  },
+  {
+    "name": "Chloe",
+    "description": "Thoughtful, introspective youthful female voice, perfect for comi"
+  },
+  {
+    "name": "Veronica",
+    "description": "Intimidating, commanding female voice, perfect for ruthless antag"
+  },
+  {
+    "name": "Victoria",
+    "description": "Silky, cunning British female voice, ideal for narrating intricat"
+  },
+  {
+    "name": "Miranda",
+    "description": "Menacing, cold-hearted female voice, perfect for strategic villai"
+  },
+  {
+    "name": "Sebastian",
+    "description": "Intimidating, steely male voice, perfect for ruthless antagonists"
+  },
+  {
+    "name": "Victor",
+    "description": "Ominous, sinister male voice, ideal for dark conspiracies, eerie"
+  },
+  {
+    "name": "Malcolm",
+    "description": "Authoritative, manipulative male voice, perfect for cunning leade"
+  },
+  {
+    "name": "Nate",
+    "description": "Conversational, sociable male voice, great for customer support a"
+  },
+  {
+    "name": "Brian",
+    "description": "Friendly, encouraging American male voice, ideal for educational"
+  },
+  {
+    "name": "Amina",
+    "description": "Warm, inviting West African female voice, ideal for community out"
+  },
+  {
+    "name": "Kelsey",
+    "description": "Warm, empathetic, reassuring female voice, ideal for phone suppor"
+  },
+  {
+    "name": "Derek",
+    "description": "Steady, professional, composed American male voice, ideal for ban"
+  },
+  {
+    "name": "Evan",
+    "description": "Friendly, approachable, easygoing male voice, ideal for onboardin"
+  },
+  {
+    "name": "Kayla",
+    "description": "Enthusiastic, youthful female voice, ideal for reaction videos, t"
+  },
+  {
+    "name": "Jake",
+    "description": "Amiable, introspective male voice, ideal for motivational talks,"
+  },
+  {
+    "name": "Grant",
+    "description": "Calm, attentive, helpful male voice, ideal for insurance claims,"
+  },
+  {
+    "name": "Alex",
+    "description": "Energetic and expressive mid-range male voice, with a mildly nasa"
+  },
+  {
+    "name": "Ashley",
+    "description": "A warm, natural female voice"
+  },
+  {
+    "name": "Craig",
+    "description": "Older British male with a refined and articulate voice"
+  },
+  {
+    "name": "Deborah",
+    "description": "Warm, peaceful female voice with a calm tone"
+  },
+  {
+    "name": "Dennis",
+    "description": "Middle-aged man with a smooth, calm and friendly voice"
+  },
+  {
+    "name": "Edward",
+    "description": "American male with a emphatic, confident and streetwise tone"
+  },
+  {
+    "name": "Elizabeth",
+    "description": "Professional middle-aged woman, perfect for narrations and voiceo"
+  },
+  {
+    "name": "Hades",
+    "description": "Commanding and gruff male voice, think an omniscient narrator or"
+  },
+  {
+    "name": "Julia",
+    "description": "Quirky, high-pitched female voice that delivers lines with playfu"
+  },
+  {
+    "name": "Pixie",
+    "description": "High-pitched, childlike female voice with a squeaky quality - gre"
+  },
+  {
+    "name": "Mark",
+    "description": "Energetic, expressive man with a rapid-fire delivery"
+  },
+  {
+    "name": "Olivia",
+    "description": "Young, British female with a friendly and helpful tone, conveying"
+  },
+  {
+    "name": "Priya",
+    "description": "Even-toned female voice with an Indian accent"
+  },
+  {
+    "name": "Ronald",
+    "description": "Confident, British man with a deep, gravelly voice"
+  },
+  {
+    "name": "Sarah",
+    "description": "Fast-talking young adult woman, with a questioning and curious to"
+  },
+  {
+    "name": "Shaun",
+    "description": "Friendly, dynamic male voice great for conversations"
+  },
+  {
+    "name": "Theodore",
+    "description": "Gravelly male voice, with a time-worn quality"
+  },
+  {
+    "name": "Timothy",
+    "description": "Lively, upbeat American male voice"
+  },
+  {
+    "name": "Wendy",
+    "description": "Posh, middle-aged British female voice"
+  },
+  {
+    "name": "Dominus",
+    "description": "Robotic, deep male voice with a menacing quality. Perfect for vil"
+  },
+  {
+    "name": "Hana",
+    "description": "Bright, expressive young female voice, perfect for storytelling,"
+  },
+  {
+    "name": "Clive",
+    "description": "British-accented English-language male voice with a calm, cordial"
+  },
+  {
+    "name": "Carter",
+    "description": "Energetic, mature radio announcer-style male voice, great for sto"
+  },
+  {
+    "name": "Blake",
+    "description": "Rich, intimate male voice, perfect for audiobooks, romantic conte"
+  },
+  {
+    "name": "Luna",
+    "description": "Calm, relaxing female voice, perfect for meditations, sleep stori"
+  },
+  {
+    "name": "Yichen",
+    "description": "A calm, flat young adult male Chinese voice"
+  },
+  {
+    "name": "Xiaoyin",
+    "description": "A youthful Chinese female voice with a gentle, sweet voice"
+  },
+  {
+    "name": "Xinyi",
+    "description": "A Chinese woman with a neutral tone, perfect for narrations"
+  },
+  {
+    "name": "Jing",
+    "description": "An energetic, fast-paced young Chinese female"
+  },
+  {
+    "name": "Erik",
+    "description": "Older Dutch male voice with a weathered edge"
+  },
+  {
+    "name": "Katrien",
+    "description": "Dutch woman with an expressive voice"
+  },
+  {
+    "name": "Lennart",
+    "description": "A confident Dutch male voice. Calm and relaxed"
+  },
+  {
+    "name": "Lore",
+    "description": "Clear, calm Dutch female voice, great for narrations and professi"
+  },
+  {
+    "name": "Alain",
+    "description": "Deep, smooth middle-aged male French voice. Composed and calm"
+  },
+  {
+    "name": "H\u00e9l\u00e8ne",
+    "description": "Middle-aged French woman, with a smooth, musical, and graceful vo"
+  },
+  {
+    "name": "Mathieu",
+    "description": "A French male voice carrying a nasal quality"
+  },
+  {
+    "name": "\u00c9tienne",
+    "description": "Calm young adult French male"
+  },
+  {
+    "name": "Johanna",
+    "description": "A calm older German female with a low, smoky voice"
+  },
+  {
+    "name": "Josef",
+    "description": "An articulate German male voice with an announcer-like quality"
+  },
+  {
+    "name": "Gianni",
+    "description": "Deep, smooth Italian male voice that speaks rapidly"
+  },
+  {
+    "name": "Orietta",
+    "description": "Calm adult female Italian voice, with a soothing cadence"
+  },
+  {
+    "name": "Asuka",
+    "description": "Friendly, young adult Japanese female voice"
+  },
+  {
+    "name": "Satoshi",
+    "description": "Dramatic, expressive male Japanese voice filled with energy"
+  },
+  {
+    "name": "Hyunwoo",
+    "description": "Young adult Korean male voice"
+  },
+  {
+    "name": "Minji",
+    "description": "Energetic, friendly young Korean female voice"
+  },
+  {
+    "name": "Seojun",
+    "description": "Clear, deep mature Korean male voice"
+  },
+  {
+    "name": "Yoona",
+    "description": "Korean woman with a gentle, soothing voice"
+  },
+  {
+    "name": "Szymon",
+    "description": "Polish adult male voice with a warm, friendly quality"
+  },
+  {
+    "name": "Wojciech",
+    "description": "A middle-aged Polish male voice"
+  },
+  {
+    "name": "Heitor",
+    "description": "Composed Portuguese-speaking male voice with a neutral tone"
+  },
+  {
+    "name": "Mait\u00ea",
+    "description": "Middle-aged Portuguese-speaking female voice"
+  },
+  {
+    "name": "Diego",
+    "description": "Spanish-speaking male voice with a soothing, gentle quality"
+  },
+  {
+    "name": "Lupita",
+    "description": "Vibrant, energetic young Spanish-speaking female voice"
+  },
+  {
+    "name": "Miguel",
+    "description": "A calm adult Spanish-speaking male voice, perfect for storytellin"
+  },
+  {
+    "name": "Rafael",
+    "description": "Middle-aged Spanish-speaking male with a deep, composed voice. Gr"
+  },
+  {
+    "name": "Svetlana",
+    "description": "Soft, high-pitched female voice, with a moderate pace and slightl"
+  },
+  {
+    "name": "Elena",
+    "description": "Clear, mid-range female voice, with a smooth texture and a neutra"
+  },
+  {
+    "name": "Dmitry",
+    "description": "Deep, gravelly male voice, delivered at a moderate pace with a co"
+  },
+  {
+    "name": "Nikolai",
+    "description": "Deep, resonant male voice, delivered at a measured pace with a cl"
+  },
+  {
+    "name": "Riya",
+    "description": "Professional and clean female voice, with a clear and articulate"
+  },
+  {
+    "name": "Manoj",
+    "description": "Clear, professional Hindi male voice. Great for narrations, news"
+  },
+  {
+    "name": "Yael",
+    "description": "Mid-range female Hebrew voice, suitable for narrations, storytell"
+  },
+  {
+    "name": "Oren",
+    "description": "Steady male Hebrew voice, great for podcasts, voice overs, or ann"
+  },
+  {
+    "name": "Nour",
+    "description": "Polished female Arabic voice with a friendly tone, great for voic"
+  },
+  {
+    "name": "Omar",
+    "description": "Bright, confident Arabic male voice, great for announcements, bro"
+  }
+]

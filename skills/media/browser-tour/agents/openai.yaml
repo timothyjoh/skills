@@ -1,0 +1,3 @@
+interface:
+  display_name: "Browser Tour"
+  short_description: "Narrated, pausing tour of web pages in Chrome"
