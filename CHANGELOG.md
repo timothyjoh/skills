@@ -1,5 +1,11 @@
 # timothyjoh-skills
 
+## 0.3.1
+
+### Patch Changes
+
+- [`6517071`](https://github.com/timothyjoh/skills/commit/65170711f871fc8c97307054ffc1becb39291e4c) Thanks [@timothyjoh](https://github.com/timothyjoh)! - `tts-voice` keeps the model's warnings and progress bar out of stderr unless synthesis fails, and is verified to work with no reference WAVs present (`--voice default`).
+
 ## 0.3.0
 
 ### Minor Changes
