@@ -1,5 +1,11 @@
 # timothyjoh-skills
 
+## 0.3.2
+
+### Patch Changes
+
+- [`e9ab88c`](https://github.com/timothyjoh/skills/commit/e9ab88c43a1db28049578c562e462df5ead149b5) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Credit `show-me` to its author (Dex Horthy, HumanLayer) in frontmatter, README and docs, and adopt `metadata.origin` as the convention for skills written by others.
+
 ## 0.3.1
 
 ### Patch Changes

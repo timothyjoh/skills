@@ -1,6 +1,6 @@
 {
   "name": "timothyjoh-skills",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "description": "Timothy Johnson's agent skills: turning channels, playlists and transcripts into knowledge an agent can work with",
   "repository": {
