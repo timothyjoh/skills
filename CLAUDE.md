@@ -14,7 +14,7 @@ Each bucket folder has a `README.md` that lists every skill in the bucket with a
 
 Every skill also has a human-facing docs page at `docs/<bucket>/<skill-name>.md`, following [.agents/writing-docs.md](./.agents/writing-docs.md): **What it does**, **When to reach for it**, **Common questions**, **It's working if**.
 
-Every `SKILL.md` is either user-invoked (`disable-model-invocation: true` plus `policy.allow_implicit_invocation: false` in `agents/openai.yaml`, reachable only by the human) or model-invoked (model- or user-reachable). See [.agents/invocation.md](./.agents/invocation.md).
+Every `SKILL.md` is either user-invoked (`disable-model-invocation: true` plus `policy.allow_implicit_invocation: false` in `agents/openai.yaml`, reachable only by the human; its description is a one-line human-facing summary) or model-invoked (model- or user-reachable; its description keeps rich trigger phrasing so auto-invocation fires). Every skill carries an `agents/openai.yaml` beside its `SKILL.md` with `interface.display_name` and `interface.short_description` for Codex. A skill that needs another skill says so with an explicit instruction to call the Skill tool with its name; a user-invoked skill can never be reached that way, so phrase that as an instruction for the human to run it.
 
 Skills that ship scripts keep them inside the skill folder (`scripts/`, `workflow/`) and reach them relative to `SKILL.md`, never via a path outside the skill. A skill must work when its folder is copied or symlinked anywhere.
 
