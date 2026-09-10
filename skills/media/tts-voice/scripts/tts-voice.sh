@@ -90,7 +90,16 @@ TS=$(date +%Y%m%d-%H%M%S)
 WAV_OUT="/tmp/tts-voice-${VOICE}-${TS}.wav"
 args=("$REPO/generate.py" "$TEXT" "--device" "$DEVICE" "--out" "$WAV_OUT")
 [[ -n "$REF" ]] && args+=("--ref" "$REF")
-"$VENV_PY" "${args[@]}" >/dev/null
+# The model prints deprecation warnings and a progress bar on every run; keep
+# them out of the way unless synthesis actually fails.
+LOG="$(mktemp /tmp/tts-voice-XXXXXX.log)"
+if ! "$VENV_PY" "${args[@]}" >/dev/null 2>"$LOG"; then
+  echo "Synthesis failed. Output from generate.py:" >&2
+  cat "$LOG" >&2
+  rm -f "$LOG"
+  exit 7
+fi
+rm -f "$LOG"
 
 case "$FORMAT" in
   wav)
