@@ -1,0 +1,21 @@
+{
+  "name": "timothyjoh",
+  "owner": {
+    "name": "Timothy Johnson",
+    "url": "https://github.com/timothyjoh"
+  },
+  "description": "Timothy Johnson's knowledge-work skills, as an installable Claude Code plugin.",
+  "plugins": [
+    {
+      "name": "timothyjoh-skills",
+      "source": "./",
+      "description": "Agent skills for knowledge work: channel-to-skill and the YouTube transcript pipeline.",
+      "category": "productivity",
+      "keywords": [
+        "knowledge",
+        "youtube",
+        "skills"
+      ]
+    }
+  ]
+}

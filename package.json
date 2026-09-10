@@ -1,0 +1,22 @@
+{
+  "name": "timothyjoh-skills",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Timothy Johnson's agent skills: turning channels, playlists and transcripts into knowledge an agent can work with",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/timothyjoh/skills"
+  },
+  "license": "MIT",
+  "scripts": {
+    "changeset": "changeset",
+    "version": "changeset version && node scripts/sync-plugin-version.mjs",
+    "check-plugin-version": "node scripts/sync-plugin-version.mjs --check",
+    "validate": "claude plugin validate . --strict"
+  },
+  "devDependencies": {
+    "@changesets/changelog-github": "^0.7.0",
+    "@changesets/cli": "^2.30.0"
+  },
+  "packageManager": "npm@10.9.4"
+}

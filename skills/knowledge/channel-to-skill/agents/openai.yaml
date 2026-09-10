@@ -1,0 +1,5 @@
+interface:
+  display_name: "Channel To Skill"
+  short_description: "Turn a YouTube channel into an agent skill"
+policy:
+  allow_implicit_invocation: false

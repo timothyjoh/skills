@@ -1,0 +1,93 @@
+# Skills For Knowledge Work
+
+[![skills.sh](https://skills.sh/b/timothyjoh/skills)](https://skills.sh/timothyjoh/skills)
+
+Agent skills I use to turn what I watch and read into something an agent can *work with*: a YouTube channel into a skill that decides the way the creator decides, playlists into a transcript pipeline, transcripts into a cross-linked knowledge base.
+
+The structure and tooling follow [mattpocock/skills](https://github.com/mattpocock/skills): bucketed `skills/`, one docs page per promoted skill, a Claude Code plugin manifest, changesets for releases.
+
+## Installation
+
+Two ways in. **The Claude Code plugin** installs the set as a managed, read-only bundle. **[skills.sh](https://skills.sh/timothyjoh/skills)** copies editable skill files into your project. Pick one: installing both leaves you with every skill twice.
+
+<details>
+<summary><strong>Claude Code</strong></summary>
+
+```bash
+claude plugin marketplace add timothyjoh/skills
+claude plugin install timothyjoh-skills@timothyjoh
+```
+
+Or, from inside a session:
+
+```
+/plugin marketplace add timothyjoh/skills
+/plugin install timothyjoh-skills@timothyjoh
+```
+
+Updates arrive with `claude plugin update timothyjoh-skills`.
+
+</details>
+
+<details>
+<summary><strong>Codex, and other agents</strong></summary>
+
+```bash
+npx skills@latest add timothyjoh/skills
+```
+
+Pick the skills you want, and which coding agents to install them on.
+
+</details>
+
+<details>
+<summary><strong>For tinkerers</strong></summary>
+
+Use the same installer, on any agent, including Claude Code:
+
+```bash
+npx skills@latest add timothyjoh/skills
+```
+
+It writes the skills into your repo as ordinary files you own and can edit. Pull my latest changes when you want them with `npx skills update`.
+
+</details>
+
+## Prerequisites
+
+The knowledge skills shell out to two tools:
+
+- [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) on `PATH` (`brew install yt-dlp`). No YouTube API key.
+- Node 18 or newer, for the bundled scripts.
+
+## Reference
+
+These split on one axis: who can invoke them. **User-invoked** skills are reachable only when you type them; their job is to orchestrate. **Model-invoked** skills can be invoked by you or reached for automatically by the agent when the task fits.
+
+### Knowledge
+
+Turning sources into knowledge an agent can work with.
+
+**User-invoked**
+
+- **[channel-to-skill](./skills/knowledge/channel-to-skill/SKILL.md)**: Turn a YouTube channel into an agent skill (SKILL.md, concept pages, glossary, patterns, cheatsheet). One question to you picks the videos; a background workflow reads every transcript once and renders the skill. Docs: [channel-to-skill](./docs/knowledge/channel-to-skill.md).
+
+**Model-invoked**
+
+- None yet.
+
+## Developing
+
+```bash
+npm install
+npm run validate          # claude plugin validate . --strict
+scripts/link-skills.sh    # symlink every skill into ~/.claude/skills and ~/.agents/skills
+scripts/list-skills.sh
+npx changeset             # record a user-visible change before a PR
+```
+
+Conventions live in [CLAUDE.md](./CLAUDE.md).
+
+## License
+
+MIT

@@ -1,0 +1,22 @@
+{
+  "name": "timothyjoh-skills",
+  "version": "0.1.0",
+  "description": "Timothy Johnson's agent skills for knowledge work: turn a YouTube channel into a skill an agent can decide with, and more to come.",
+  "author": {
+    "name": "Timothy Johnson",
+    "url": "https://github.com/timothyjoh"
+  },
+  "homepage": "https://github.com/timothyjoh/skills",
+  "repository": "https://github.com/timothyjoh/skills",
+  "license": "MIT",
+  "keywords": [
+    "knowledge",
+    "skills",
+    "youtube",
+    "transcripts",
+    "channel-to-skill"
+  ],
+  "skills": [
+    "./skills/knowledge/channel-to-skill"
+  ]
+}
