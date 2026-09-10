@@ -1,5 +1,11 @@
 # timothyjoh-skills
 
+## 0.3.0
+
+### Minor Changes
+
+- [`5ae1b8a`](https://github.com/timothyjoh/skills/commit/5ae1b8a8fdf211f97a83c21c8b657af479c2f318) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Add the `media` bucket (`storytime`, `browser-tour`, `tts-voice`) and vendor `asd-ste100` into `writing` as the rule set `wat` depends on. `tts-voice` is local Chatterbox TTS with data-driven voices (any WAV in `CHATTERBOX_VOICES_DIR`); `storytime` and `browser-tour` use it as their only engine, resolved relative to the skill folder.
+
 ## 0.2.0
 
 ### Minor Changes
