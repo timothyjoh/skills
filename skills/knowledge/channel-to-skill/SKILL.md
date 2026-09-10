@@ -1,6 +1,7 @@
 ---
 name: channel-to-skill
 description: Turn a YouTube channel into an agent skill (SKILL.md, concepts/, glossary, patterns, cheatsheet), triaged first because a channel is unedited. Uses yt-dlp, no API key.
+argument-hint: "<@Handle or channel URL> [--full N] [--dry-run]"
 disable-model-invocation: true
 ---
 
@@ -9,6 +10,8 @@ disable-model-invocation: true
 Build a skill an agent can *work with*, deciding the way the creator decides, from a YouTube channel. Not a knowledge base, and not a folder of video summaries. The unit of organization is the **concept**, mined across every video that teaches it, because a channel says the same thing thirty times under thirty titles.
 
 Steps 1 to 3 are interactive: the only decision a human must make is *which videos*. Steps 4 to 6 run as a background workflow that reads every transcript exactly once.
+
+`--dry-run` runs Steps 1 to 3 in full (they cost no LLM tokens beyond one triage agent), writes `scope.json`, then prints the estimate and the exact Workflow call Step 4 would make, and stops. Nothing is fetched and nothing is generated. Re-run without the flag to build; the scope file is reused, so the question is not asked twice unless the user wants to change it.
 
 ## Where things go
 
@@ -68,6 +71,8 @@ Write the choice to `$KB/scope.json`:
 Dropped clusters and exclusions stay in `catalog.json`; only `scope.videos` gets fetched.
 
 ## Step 4: Run the workflow
+
+**If `--dry-run`:** print the video count in scope, the estimate (about 30k tokens per video, so 100 videos is roughly 3M tokens and 15 to 20 minutes; transcripts are free), and the Workflow call below with every argument filled in as it would be sent. Then stop and tell the user to re-run without `--dry-run` to build.
 
 ```
 Workflow({
