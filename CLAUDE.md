@@ -24,6 +24,8 @@ To (re)link every skill outside `deprecated/` into the local harness skill direc
 
 Releases use changesets: add one under `.changeset/` with every user-visible change; the release workflow opens a version PR, and `npm run version` keeps `.claude-plugin/plugin.json`'s version in sync with `package.json`.
 
+A skill written by someone else carries an `origin` block under `metadata` in its `SKILL.md` frontmatter: `author`, `url` (where it was found), and when known `repository`, `path`, `commit`, and `license`, plus a one-line `modified` note if the copy is not verbatim. The README and docs entries name the author too. This is the credit; it does not change who maintains the copy here.
+
 Vendored third-party skills carry an `ORIGIN.md` naming the upstream commit and license, and are kept byte-identical to upstream: never edit them in place, re-vendor instead. They are exempt from the em-dash rule below.
 
 Skills that depend on a sibling skill's script (storytime and browser-tour on tts-voice) resolve it relative to their own folder (`../<skill>/scripts/`), so the dependency holds wherever the bucket is installed as a set; each such `SKILL.md` names the dependency under Prerequisites and offers an environment-variable override. Secrets never go in a file: a script that needs a credential reads it from an environment variable and fails with the variable's name when it is missing.

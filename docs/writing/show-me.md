@@ -1,6 +1,6 @@
 ## What it does
 
-`show-me` explains whatever is currently under discussion with a picture instead of prose. It picks the smallest view that makes the point: pseudocode for logic, a call tree for control flow, a component or file tree for structure, Mermaid for interaction, a `diff` when the point is what changes, and one focused HTML file only when text cannot carry it. The prose around the picture stays short; the picture does the explaining.
+`show-me` explains whatever is currently under discussion with a picture instead of prose. It picks the smallest view that makes the point: pseudocode for logic, a call tree for control flow, a component or file tree for structure, Mermaid for interaction, a `diff` when the point is what changes, and one focused HTML file only when text cannot carry it. The prose around the picture stays short; the picture does the explaining. Written by Dex Horthy at HumanLayer and introduced in [this post](https://www.humanlayer.com/blog/show-me-skill); carried here under MIT from [humanlayer/skills](https://github.com/humanlayer/skills).
 
 ## When to reach for it
 
