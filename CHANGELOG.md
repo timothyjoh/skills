@@ -1,5 +1,11 @@
 # timothyjoh-skills
 
+## 0.3.3
+
+### Patch Changes
+
+- [`5f8b5fb`](https://github.com/timothyjoh/skills/commit/5f8b5fb3a3067d8e67d6fd9ba7a679c6e432e98c) Thanks [@timothyjoh](https://github.com/timothyjoh)! - `channel-to-skill` gains `--dry-run`: enumerate, triage, and write `scope.json`, then print the estimate and the workflow call without fetching or generating anything.
+
 ## 0.3.2
 
 ### Patch Changes
