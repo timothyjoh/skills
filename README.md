@@ -4,8 +4,6 @@
 
 Agent skills I use to turn what I watch and read into something an agent can *work with*: a YouTube channel into a skill that decides the way the creator decides, playlists into a transcript pipeline, transcripts into a cross-linked knowledge base. Plus a few for explaining things with a picture and plain words.
 
-The structure and tooling follow [mattpocock/skills](https://github.com/mattpocock/skills): bucketed `skills/`, one docs page per promoted skill, a Claude Code plugin manifest, changesets for releases.
-
 ## Installation
 
 Two ways in. **The Claude Code plugin** installs the set as a managed, read-only bundle. **[skills.sh](https://skills.sh/timothyjoh/skills)** copies editable skill files into your project. Pick one: installing both leaves you with every skill twice.
