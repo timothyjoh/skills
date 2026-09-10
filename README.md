@@ -2,7 +2,7 @@
 
 [![skills.sh](https://skills.sh/b/timothyjoh/skills)](https://skills.sh/timothyjoh/skills)
 
-Agent skills I use to turn what I watch and read into something an agent can *work with*: a YouTube channel into a skill that decides the way the creator decides, playlists into a transcript pipeline, transcripts into a cross-linked knowledge base.
+Agent skills I use to turn what I watch and read into something an agent can *work with*: a YouTube channel into a skill that decides the way the creator decides, playlists into a transcript pipeline, transcripts into a cross-linked knowledge base. Plus a few for explaining things with a picture and plain words.
 
 The structure and tooling follow [mattpocock/skills](https://github.com/mattpocock/skills): bucketed `skills/`, one docs page per promoted skill, a Claude Code plugin manifest, changesets for releases.
 
@@ -75,6 +75,19 @@ Turning sources into knowledge an agent can work with.
 **Model-invoked**
 
 - None yet.
+
+### Writing
+
+Explaining things: to a reader who is lost, or to one who needs a picture.
+
+**User-invoked**
+
+- None yet.
+
+**Model-invoked**
+
+- **[show-me](./skills/writing/show-me/SKILL.md)**: Explain the current topic visually with the smallest view that makes the point: pseudocode, a call tree, a component or file tree, Mermaid, a `diff`, or one focused HTML file. Docs: [show-me](./docs/writing/show-me.md).
+- **[wat](./skills/writing/wat/SKILL.md)**: Re-explain the previous answer with one picture and plain words. Fires on a bare "wat", on "ELI5", or when the reader says they are lost. Docs: [wat](./docs/writing/wat.md).
 
 ## Developing
 

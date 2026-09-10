@@ -1,18 +1,19 @@
 Skills are organized into bucket folders under `skills/`:
 
 - `knowledge/`: turning sources (YouTube channels, playlists, transcripts) into knowledge an agent can work with
+- `writing/`: explaining things, to a lost reader or with a picture
 - `in-progress/`: beta: public on purpose, feedback wanted, not shipped in the plugin
 - `deprecated/`: no longer used
 
-Every skill in `knowledge/` (the **promoted** bucket) must have a reference in the top-level `README.md` and an entry in `.claude-plugin/plugin.json`'s `skills` array (the Claude Code plugin ships exactly the promoted set). Skills in `in-progress/` and `deprecated/` must not appear in either.
+Every skill in `knowledge/` or `writing/` (the **promoted** buckets) must have a reference in the top-level `README.md` and an entry in `.claude-plugin/plugin.json`'s `skills` array (the Claude Code plugin ships exactly the promoted set). Skills in `in-progress/` and `deprecated/` must not appear in either.
 
 Install commands are copied verbatim from [.agents/install-block.md](./.agents/install-block.md). `.claude-plugin/marketplace.json` makes the repo its own single-plugin marketplace, which is the documented route here (this plugin is not in Claude Code's official marketplace). Run `claude plugin validate . --strict` after touching either manifest.
 
 Each skill entry in the top-level `README.md` must link the skill name to its `SKILL.md`.
 
-Each bucket folder has a `README.md` that lists every skill in the bucket with a one-line description, with the skill name linked to its `SKILL.md`. The promoted bucket's `README.md` and the top-level `README.md` group entries into **User-invoked** and **Model-invoked**; non-promoted bucket `README.md`s use a flat list.
+Each bucket folder has a `README.md` that lists every skill in the bucket with a one-line description, with the skill name linked to its `SKILL.md`. The promoted buckets' `README.md`s and the top-level `README.md` group entries into **User-invoked** and **Model-invoked**; non-promoted bucket `README.md`s use a flat list.
 
-Skills in `knowledge/` also have a human-facing docs page at `docs/knowledge/<skill-name>.md`, following [.agents/writing-docs.md](./.agents/writing-docs.md): **What it does**, **When to reach for it**, **Common questions**, **It's working if**. Skills in the non-promoted buckets get no docs page.
+Skills in `knowledge/` and `writing/` also have a human-facing docs page at `docs/<bucket>/<skill-name>.md`, following [.agents/writing-docs.md](./.agents/writing-docs.md): **What it does**, **When to reach for it**, **Common questions**, **It's working if**. Skills in the non-promoted buckets get no docs page.
 
 Every `SKILL.md` is either user-invoked (`disable-model-invocation: true` plus `policy.allow_implicit_invocation: false` in `agents/openai.yaml`, reachable only by the human) or model-invoked (model- or user-reachable). See [.agents/invocation.md](./.agents/invocation.md).
 

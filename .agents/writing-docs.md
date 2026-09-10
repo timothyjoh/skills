@@ -1,6 +1,6 @@
 # Writing docs pages
 
-Every skill in `knowledge/` has a human-facing **docs page** at `docs/knowledge/<skill-name>.md`. The page is not the skill and not a copy of `SKILL.md`: it orients one reader around one skill so they know what it is, when to reach for it, and what it looks like when it is working. Non-promoted buckets (`in-progress/`, `deprecated/`) ship no docs page.
+Every skill in `knowledge/` or `writing/` has a human-facing **docs page** at `docs/<bucket>/<skill-name>.md`. The page is not the skill and not a copy of `SKILL.md`: it orients one reader around one skill so they know what it is, when to reach for it, and what it looks like when it is working. Non-promoted buckets (`in-progress/`, `deprecated/`) ship no docs page.
 
 Act whenever a promoted skill is added, renamed, or has its behaviour changed: create or re-sync its docs page. A rename moves the file too.
 
