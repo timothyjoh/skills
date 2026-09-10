@@ -5,11 +5,6 @@ metadata:
   origin:
     author: Dex Horthy (HumanLayer)
     url: https://www.humanlayer.com/blog/show-me-skill
-    repository: https://github.com/humanlayer/skills
-    path: plugins/show-me/skills/show-me/SKILL.md
-    commit: 3c2629142c5d
-    license: MIT
-    modified: one em-dash rewritten as a colon
 ---
 
 Help the user understand the current topic of conversation visually. Skip the preamble and keep prose brief. Pick the smallest view that makes the key point clear.
