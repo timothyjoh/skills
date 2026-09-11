@@ -1,0 +1,5 @@
+interface:
+  display_name: "Playlist To Skill"
+  short_description: "Turn a whole YouTube playlist into an agent skill"
+policy:
+  allow_implicit_invocation: false

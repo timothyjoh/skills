@@ -7,3 +7,5 @@ Turning sources (YouTube channels, playlists, transcripts) into knowledge an age
 Reachable only when you type them (Claude Code: `disable-model-invocation: true`; Codex: `policy.allow_implicit_invocation: false` in `agents/openai.yaml`).
 
 - **[channel-to-skill](./channel-to-skill/SKILL.md)**: Turn a YouTube channel, long-form videos and Shorts, into an agent skill (SKILL.md, concept pages, glossary, patterns, cheatsheet). Triage picks the videos, a background workflow reads every transcript once and renders the skill.
+
+- **[playlist-to-skill](./playlist-to-skill/SKILL.md)**: Turn a complete YouTube playlist into an agent skill, processing every available transcript without triage or subset selection.
