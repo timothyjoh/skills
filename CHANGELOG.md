@@ -1,5 +1,11 @@
 # timothyjoh-skills
 
+## 0.5.0
+
+### Minor Changes
+
+- [`ea0cd68`](https://github.com/timothyjoh/skills/commit/ea0cd68bd14031558b391ba75664153158d3a54e) Thanks [@timothyjoh](https://github.com/timothyjoh)! - `channel-to-skill` and `playlist-to-skill` name the generated skill for what the source is centered on: `expert-<person>` when one person's teaching is the point (`expert-cole-medin`), `topic-kb-<topic>` when a subject is (`topic-kb-sales-negotiation`). The channel triage agent proposes the name and the run's one question states it; the playlist enumerator prints creators with counts and gains `--slug` to stamp the chosen name. Existing skills keep their names; fold-in never renames.
+
 ## 0.4.0
 
 ### Minor Changes
