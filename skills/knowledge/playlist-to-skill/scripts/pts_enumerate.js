@@ -41,9 +41,10 @@ function catalogAndScope(info, playlist, previous) {
     return entry;
   });
   // Keep previous sources for additive fold-in, including removed playlist entries.
+  // Videos added by pts_add.js (source: "manual") stay current: they were never playlist members.
   const currentIds = new Set(videos.keys());
   for (const v of previous?.videos || []) {
-    if (!currentIds.has(v.id)) videos.set(v.id, { ...v, current: false, playlist_positions: [] });
+    if (!currentIds.has(v.id)) videos.set(v.id, { ...v, current: v.source === 'manual', playlist_positions: [] });
   }
   const title = info.title || playlist.id;
   const common = {

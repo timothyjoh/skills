@@ -122,3 +122,21 @@ test('workflow halts before synthesis on pending fetches or missing extractions'
   await assert.rejects(workflow(args, agent, tasks => Promise.all(tasks.map(fn => fn())), () => {}, () => {}), /Extraction incomplete/);
   assert.equal(calls, 2);
 });
+
+test('manual additions parse IDs, carry metadata, and stay current across fold-in', () => {
+  const { videoId, manualVideo } = require('./pts_add');
+  assert.equal(videoId('https://youtu.be/eeeeeeeeeee?t=5'), 'eeeeeeeeeee');
+  assert.equal(videoId('https://www.youtube.com/shorts/eeeeeeeeeee'), 'eeeeeeeeeee');
+  assert.equal(videoId('https://www.youtube.com/watch?v=eeeeeeeeeee&list=PLx'), 'eeeeeeeeeee');
+  assert.equal(videoId('eeeeeeeeeee'), 'eeeeeeeeeee');
+  assert.throws(() => videoId('https://example.com/watch?v=eeeeeeeeeee'));
+  const v = manualVideo({ id: 'eeeeeeeeeee', title: 'Added', channel: 'Three', duration: 30, upload_date: '20260901', webpage_url: 'https://www.youtube.com/watch?v=eeeeeeeeeee' }, '2026-09-10');
+  assert.deepEqual([v.source, v.current, v.playlist_positions, v.published, v.kind], ['manual', true, [], '2026-09-01', 'video']);
+  const previous = catalogAndScope(fixture, playlist).scope;
+  previous.videos.push(v);
+  const { scope } = catalogAndScope({ ...fixture, playlist_count: 1, entries: [{ id: 'ddddddddddd' }] }, playlist, previous);
+  const manual = scope.videos.find((x) => x.id === 'eeeeeeeeeee');
+  assert.equal(manual.current, true);
+  assert.equal(scope.videos.filter((x) => x.current).length, 2);
+  assert.equal(scope.videos.find((x) => x.id === 'aaaaaaaaaaa').current, false);
+});

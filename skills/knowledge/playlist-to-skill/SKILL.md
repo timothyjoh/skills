@@ -30,7 +30,7 @@ Use `SLUG=playlist-<lowercase playlist ID>` to keep runs stable across title cha
 - `SCRIPTS=$SKILL_DIR/scripts` and `WORKFLOW=$SKILL_DIR/workflow/playlist-to-skill.js`.
 - `NODE` to the absolute path returned by `command -v node`.
 
-Reuse an existing matching scope's slug. The enumerator rejects a working directory that belongs to another playlist. Preserve working data with the generated skill so future runs retain provenance.
+Before using that default, look for an existing scope for this playlist: `grep -l '"playlist_id": "<ID>"' $ROOT/kb/*/scope.json`. If one exists, take `SLUG` from its `slug` field and use that directory, even when it was renamed to a readable name such as `dan-mohler`. A renamed skill keeps its `name` frontmatter, `manifest.json`, and `scope.json` `slug` in sync with the directory name. The enumerator rejects a working directory that belongs to another playlist. Preserve working data with the generated skill so future runs retain provenance.
 
 ## 2. Enumerate everything
 
@@ -87,3 +87,14 @@ Report playlist entries, unique current IDs, retained previous sources, fetched 
 ## Fold-in
 
 Re-running on the same playlist enumerates its current full membership and adds every new ID automatically. Preserve removed entries as previous sources in the scope and source index. Reuse successful transcripts and extractions, keep existing concept IDs stable, and regenerate the taxonomy, pages, and support files. Date or title changes never trigger a new subset decision.
+
+## Manual additions
+
+When the user wants specific videos folded into an existing skill without editing the YouTube playlist (for example, the playlist belongs to someone else), add them to the scope directly:
+
+```bash
+"$NODE" "$SCRIPTS/pts_add.js" --kb-dir "$KB" <url-or-id> [<url-or-id> ...]
+"$NODE" "$SCRIPTS/pts_add.js" --kb-dir "$KB" --file <path>   # one URL or ID per line
+```
+
+Each video is appended to `scope.json` with `source: "manual"`, `current: true`, and no playlist position; videos already in scope are skipped. Then run the workflow in `fold-in` mode as above. Manual videos survive later re-enumerations of the playlist, and `sources.md` lists them in a "Manual additions" table after the playlist table. Only add videos the user named or approved; the playlist itself is never pruned.

@@ -37,6 +37,9 @@ They remain visible in the coverage report. The skill processes the available tr
 **What happens when the playlist changes?**
 A rerun includes every new ID automatically and reuses earlier work. Removed videos remain marked as previous sources. Concept IDs stay stable.
 
+**Can I add a video that is not in the playlist?**
+Yes. When the playlist belongs to someone else, or a related video lives outside it, ask for those videos to be added and give their URLs or IDs. They join the scope as manual additions, get processed in a fold-in run, and stay in the skill across later reruns. The playlist itself is never pruned.
+
 ## It's working if
 
 - A watch URL with a playlist parameter processes the entire playlist, regardless of its starting index.
