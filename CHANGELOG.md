@@ -1,5 +1,17 @@
 # timothyjoh-skills
 
+## 0.4.0
+
+### Minor Changes
+
+- [`f155e59`](https://github.com/timothyjoh/skills/commit/f155e599688f98e07e23a2408818069181143610) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Add `playlist-to-skill` to turn a complete YouTube playlist into a concept-based agent skill. Include every entry automatically without triage or subset selection, preserve creator attribution and unavailable-source accounting, and support resumable fetching and additive fold-in.
+
+- [`2de0e04`](https://github.com/timothyjoh/skills/commit/2de0e0416a112639e412672ed1243f788115bdab) Thanks [@timothyjoh](https://github.com/timothyjoh)! - `channel-to-skill` enumerates the `/shorts` tab alongside `/videos`. Every catalog and scope entry carries `kind: video | short`; the triage proposes mixes of long-form and Shorts rather than long-form cuts alone, weighted by what the channel is (a clip channel's Shorts are its densest material). The enumerator no longer drops anything by duration unless `--min-duration` is passed, samples the top Shorts by views for dates and durations (`--full-shorts`, default 100), and reports both kinds separately. The workflow batches extraction by transcript words instead of video count (`batchWords`, default 40k; `batchMax`, default 40), tells the extractor a Short yields one concept and is never padded, folds Shorts into the concept they restate and counts them per concept as a signal of what is central, and labels Shorts in concept sources and `sources.md`.
+
+### Patch Changes
+
+- [`183c105`](https://github.com/timothyjoh/skills/commit/183c1056161dd8c526207768c3c662d191944f0d) Thanks [@timothyjoh](https://github.com/timothyjoh)! - `playlist-to-skill` gains `pts_add.js` for folding specific videos into an existing skill without editing the YouTube playlist (useful when the playlist belongs to someone else). Each video is appended to `scope.json` with `source: "manual"` and survives later re-enumerations; `sources.md` lists them in a "Manual additions" table. The skill also reuses an existing scope for the same playlist ID even after its directory was renamed.
+
 ## 0.3.3
 
 ### Patch Changes
