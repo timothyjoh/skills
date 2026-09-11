@@ -117,13 +117,13 @@ for (const v of queue) {
   const infoPath = path.join(tmp, `${v.id}.info.json`);
   if (r.status !== 0 && !fs.existsSync(infoPath)) {
     const reason = stderr.trim().split('\n').pop() || `yt-dlp exit ${r.status}`;
-    manifest.videos[v.id] = { status: 'failed', title: v.title, reason, attempted_at: today };
+    manifest.videos[v.id] = { status: 'failed', kind: v.kind || 'video', title: v.title, reason, attempted_at: today };
     counts.failed++; console.error(`FAILED (${reason})`); sleep(args.delay * 1000); continue;
   }
   const meta = fs.existsSync(infoPath) ? JSON.parse(fs.readFileSync(infoPath, 'utf8')) : {};
   const vttPath = findVtt(tmp, v.id);
   if (!vttPath) {
-    manifest.videos[v.id] = { status: 'no-captions', title: meta.title || v.title, published: isoDate(meta.upload_date), attempted_at: today };
+    manifest.videos[v.id] = { status: 'no-captions', kind: v.kind || 'video', title: meta.title || v.title, published: isoDate(meta.upload_date), attempted_at: today };
     counts.no_captions++; console.error('no captions'); sleep(args.delay * 1000); continue;
   }
   const cues = vttCues(fs.readFileSync(vttPath, 'utf8'));
@@ -138,6 +138,7 @@ for (const v of queue) {
     `title: ${yq(meta.title || v.title)}`,
     `resource: ${url}`,
     `youtube_id: ${v.id}`,
+    `kind: ${v.kind || 'video'}`,
     `channel: ${yq(meta.channel || meta.uploader || scope.channel)}`,
     `published: "${published}"`,
     `duration_seconds: ${Number.isFinite(meta.duration) ? Math.round(meta.duration) : 'null'}`,
@@ -159,6 +160,7 @@ for (const v of queue) {
   fs.writeFileSync(path.join(args.kbDir, rel), md);
   manifest.videos[v.id] = {
     status: 'fetched', title: meta.title || v.title, published,
+    kind: v.kind || 'video',
     duration_seconds: Number.isFinite(meta.duration) ? Math.round(meta.duration) : null,
     words, chapters: chapters.length, path: rel, fetched_at: today,
   };

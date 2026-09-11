@@ -69,7 +69,7 @@ Turning sources into knowledge an agent can work with.
 
 **User-invoked**
 
-- **[channel-to-skill](./skills/knowledge/channel-to-skill/SKILL.md)**: Turn a YouTube channel into an agent skill (SKILL.md, concept pages, glossary, patterns, cheatsheet). One question to you picks the videos; a background workflow reads every transcript once and renders the skill. Docs: [channel-to-skill](./docs/knowledge/channel-to-skill.md).
+- **[channel-to-skill](./skills/knowledge/channel-to-skill/SKILL.md)**: Turn a YouTube channel, long-form videos and Shorts, into an agent skill (SKILL.md, concept pages, glossary, patterns, cheatsheet). One question to you picks the videos; a background workflow reads every transcript once and renders the skill. Docs: [channel-to-skill](./docs/knowledge/channel-to-skill.md).
 
 ### Writing
 

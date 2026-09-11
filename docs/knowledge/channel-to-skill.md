@@ -10,13 +10,17 @@ Reach for it when you keep going back to a creator's videos to remember how they
 
 ## Prerequisites
 
-`yt-dlp` on `PATH` and Node 18 or newer. No YouTube API key. Roughly 3M tokens and 15 to 20 minutes for a 100-video scope; transcripts are free.
+`yt-dlp` on `PATH` and Node 18 or newer. No YouTube API key. Roughly 3M tokens and 15 to 20 minutes for 100 long-form videos, and about 1M more for 300 Shorts; transcripts are free.
 
 The generated skill lands in the same skills root the `channel-to-skill` skill lives in (`.claude/skills/<slug>/` for a project install). Working data (catalog, scope, raw transcripts, extractions, taxonomy) lands beside it under `kb/<slug>/` and is meant to be committed: it is the provenance behind every rule, and a later fold-in of new videos needs it.
 
 ## Scope before spend
 
-Listing a channel costs nothing, so the skill lists all of it first: counts, runtime, per-year distribution, chapter markers. One agent proposes three cuts (recent, core, broad), flags obvious re-uploads, and you pick. That one question is the only human decision in the run. Everything after it runs as a background workflow you can watch with `/workflows`.
+Listing a channel costs nothing, so the skill lists all of it first, both tabs: long-form counts, runtime, per-year distribution and chapter markers; Shorts counts, median length and view distribution. One agent proposes three cuts (recent, core, broad), each a mix of long-form and Shorts weighted by what the channel is, flags obvious re-uploads and restated clips, and you pick. That one question is the only human decision in the run. Everything after it runs as a background workflow you can watch with `/workflows`.
+
+## Shorts are principles, not filler
+
+A Short is a clip the creator cut out of longer material because that one idea landed, and on a clip-heavy channel the Shorts hold more wisdom per word than the long videos they came from. So the skill treats them as first-class sources with different handling: the extractor expects one concept per Short and never pads it, the taxonomy folds each Short into the concept it restates and counts them, and several Shorts on one idea is read as evidence the idea is central. At about 250 transcript words each, hundreds of Shorts cost less to process than a dozen long videos.
 
 ## Read once, mine by concept
 
@@ -33,6 +37,9 @@ Channels keep publishing. Running the skill again on the same channel lists what
 **Why not one page per video?**
 Because that is a folder of summaries, and an agent cannot decide with it. A concept page synthesizes every video that teaches the idea, newest first, and marks the older takes.
 
+**Does it include Shorts?**
+Yes, from the channel's `/shorts` tab, ranked by views since the flat listing carries no dates. Pass `--tabs videos` to leave them out on a channel where they are plainly teasers. Regular uploads under 90 seconds were once dropped as well; nothing is dropped by duration now unless you ask for it.
+
 **Does it strip sponsor reads?**
 By instruction at extraction, yes. Transcripts are not pre-trimmed.
 
@@ -41,7 +48,7 @@ The fetch step reports `no-captions` per video. If that is more than a third of 
 
 ## It's working if
 
-- The run asks you exactly one question, and it is about which videos.
+- The run asks you exactly one question, and it is about which videos; each option names a long-form count and a Shorts count.
 - `SKILL.md` of the generated skill is under about 4k tokens, and its topic index sends you to the right concept file on the first try.
 - `cheatsheet.md` reads as decisions ("Use X when Y") rather than as recaps of videos.
 - Every concept page ends with a `## Sources` section whose quotes carry `[h:mm:ss]` timestamps you can jump to.

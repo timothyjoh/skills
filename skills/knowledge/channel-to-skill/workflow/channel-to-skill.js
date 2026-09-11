@@ -4,7 +4,7 @@ export const meta = {
   whenToUse: 'Invoked by the channel-to-skill skill after scope.json is written. Not for direct use.',
   phases: [
     { title: 'Fetch', detail: 'sequential yt-dlp transcript fetch from scope.json (no LLM)' },
-    { title: 'Extract', detail: 'one Sonnet agent per ~8 transcripts; each transcript read exactly once', model: 'sonnet' },
+    { title: 'Extract', detail: 'one Sonnet agent per ~40k transcript words (about 8 long-form videos or 150 Shorts); each transcript read exactly once', model: 'sonnet' },
     { title: 'Canonicalize', detail: 'one agent merges every extraction into a frozen taxonomy' },
     { title: 'Render', detail: 'one Sonnet agent per concept page', model: 'sonnet' },
     { title: 'Support', detail: 'glossary, patterns, cheatsheet, then SKILL.md + sources.md' },
@@ -12,7 +12,10 @@ export const meta = {
   ],
 }
 
-// args: { slug, channel, kbDir, skillDir, scriptsDir, today, mode?: 'build'|'fold-in', batchSize?, delay?, node? }
+// args: { slug, channel, kbDir, skillDir, scriptsDir, today, mode?: 'build'|'fold-in', batchWords?, batchMax?, delay?, node? }
+//   batchWords transcript words per extraction batch (default 40k); a Short is ~250 words, a long video ~2-5k
+//   batchMax   cap on transcripts per extraction batch regardless of words (default 40), so a Shorts-heavy
+//              batch stays a manageable number of files for one agent
 //   node       optional path to a node binary when `node` is not on PATH for non-login shells
 //   kbDir      absolute path to the working data dir (scope.json, raw/, extractions/, taxonomy.json)
 //   skillDir   absolute path where the generated skill lands
@@ -24,11 +27,12 @@ for (const k of ['slug', 'channel', 'kbDir', 'skillDir', 'scriptsDir', 'today'])
 }
 const { slug, channel, kbDir, skillDir, scriptsDir, today } = opts
 const mode = opts.mode ?? 'build'
-const batchSize = opts.batchSize ?? 8
+const batchWords = opts.batchWords ?? 40000
+const batchMax = opts.batchMax ?? 40
 const delay = opts.delay ?? 4
 const NODE = opts.node ?? 'node'
 
-log(`config: slug=${slug} mode=${mode} batchSize=${batchSize} kb=${kbDir} skill=${skillDir}`)
+log(`config: slug=${slug} mode=${mode} batchWords=${batchWords} batchMax=${batchMax} kb=${kbDir} skill=${skillDir}`)
 
 // ---------------------------------------------------------------- Fetch
 phase('Fetch')
@@ -42,10 +46,10 @@ const FETCH_SCHEMA = {
       items: {
         type: 'object',
         properties: {
-          id: { type: 'string' }, title: { type: 'string' }, published: { type: 'string' },
+          id: { type: 'string' }, title: { type: 'string' }, published: { type: 'string' }, kind: { type: 'string' },
           duration_seconds: { type: 'number' }, words: { type: 'number' }, path: { type: 'string' },
         },
-        required: ['id', 'title', 'path'],
+        required: ['id', 'title', 'path', 'words'],
       },
     },
     already_extracted: { type: 'array', items: { type: 'string' } },
@@ -61,13 +65,18 @@ const fetched = await agent(
 2. Read ${kbDir}/raw/manifest.json.
 3. List ${kbDir}/extractions/ (may not exist). Any <id>.json there is already extracted from a previous run.
 
-Do NOT run git commands. Return: the final "Done:" line as summary; every video with status "fetched" as videos (id, title, published, duration_seconds, words, path relative to kbDir e.g. "raw/<id>.md"); and already_extracted as the list of ids that have an extractions/<id>.json file.`,
+Do NOT run git commands. Return: the final "Done:" line as summary; every video with status "fetched" as videos (id, title, published, kind ("video" or "short", as in the manifest), duration_seconds, words, path relative to kbDir e.g. "raw/<id>.md"); and already_extracted as the list of ids that have an extractions/<id>.json file.`,
   { label: 'fetch', schema: FETCH_SCHEMA, effort: 'low' }
 )
 if (!fetched) throw new Error('fetch agent failed')
 const alreadyExtracted = new Set(fetched.already_extracted || [])
 const toExtract = fetched.videos.filter((v) => !alreadyExtracted.has(v.id))
-log(`${fetched.summary}: ${fetched.videos.length} transcripts, ${toExtract.length} to extract`)
+const kindOf = (v) => (v.kind === 'short' ? 'short' : 'video')
+const nShorts = fetched.videos.filter((v) => kindOf(v) === 'short').length
+const nLong = fetched.videos.length - nShorts
+const videoLabel = nShorts ? `${nLong} long-form videos + ${nShorts} Shorts` : `${nLong} videos`
+const totalWords = fetched.videos.reduce((s, v) => s + (v.words || 0), 0)
+log(`${fetched.summary}: ${fetched.videos.length} transcripts (${videoLabel}, ~${Math.round(totalWords / 1000)}k words), ${toExtract.length} to extract`)
 
 // ---------------------------------------------------------------- Extract
 phase('Extract')
@@ -82,8 +91,17 @@ const EXTRACT_SCHEMA = {
   required: ['files', 'concept_names', 'skipped'],
 }
 
+// Batch by transcript words, not by count: a long video is 2-5k words, a Short ~250.
+// Long-form first so the heavy batches start early; Shorts fill the tail.
+const ordered = [...toExtract].sort((a, b) => (b.words || 0) - (a.words || 0))
 const batches = []
-for (let i = 0; i < toExtract.length; i += batchSize) batches.push(toExtract.slice(i, i + batchSize))
+let cur = [], curWords = 0
+for (const v of ordered) {
+  const w = v.words || 500
+  if (cur.length && (curWords + w > batchWords || cur.length >= batchMax)) { batches.push(cur); cur = []; curWords = 0 }
+  cur.push(v); curWords += w
+}
+if (cur.length) batches.push(cur)
 
 const extractions = await parallel(
   batches.map((batch, bi) => () =>
@@ -91,8 +109,10 @@ const extractions = await parallel(
       `You are the extraction stage of channel-to-skill for the YouTube channel "${channel}". Read each transcript below FULLY and write one JSON file per video to ${kbDir}/extractions/<id>.json (mkdir -p the directory). Read a transcript exactly once; do not re-read.
 
 TRANSCRIPTS (paths relative to ${kbDir}):
-${batch.map((v) => `- ${v.id} | "${v.title}" | ${v.published || 'undated'} | ${v.path}`).join('\n')}
-
+${batch.map((v) => `- ${v.id} | ${kindOf(v)} | "${v.title}" | ${v.published || 'undated'} | ${v.path}`).join('\n')}
+${batch.some((v) => kindOf(v) === 'short') ? `
+SHORTS: entries marked "short" are 20-90 second clips the creator cut from longer material because that one principle landed. Expect ONE concept and one or two decision rules per Short, stated fast and without setup. The thesis IS the concept. The title is often the whole rule; keep it as the concept name when the creator phrases it that way. Never pad a Short to fill the schema: empty arrays are correct. Do not skip a Short for being brief; skip it only when it teaches nothing (a physique clip, a meal, a meme).
+` : ''}
 WHAT TO EXTRACT: structure, not summary. This feeds a skill that lets an agent think and decide the way ${channel} does.
 - thesis: ONE sentence stating the ANSWER the video delivers, not the hook. Creators bury the lede: the title poses a problem, the payoff is near the end. Find the payoff. If a "## Chapters" section exists, use it to locate it.
 - concepts: each durable idea, technique, framework, or mental model the video TEACHES (not merely mentions). For each: name (the creator's own term when they have one), definition (one sentence), how (ordered steps or criteria, concrete: numbers, tools, settings, materials), when_to_use, when_not, anti_patterns (what the creator says NOT to do, and why), quotes (2-4 verbatim lines with the [h:mm:ss] timestamp from the transcript that teach it best), example (a concrete case the creator walks through, if any, 2-4 sentences).
@@ -110,7 +130,7 @@ RULES
 - If a video is pure entertainment, an unboxing with no verdict, or a livestream ramble with nothing transferable, write no file and list it under skipped with a reason.
 
 FILE SHAPE (write exactly this JSON structure):
-{"video_id": "...", "title": "...", "published": "YYYY-MM-DD", "thesis": "...",
+{"video_id": "...", "title": "...", "published": "YYYY-MM-DD", "kind": "video|short", "thesis": "...",
  "concepts": [{"name": "...", "definition": "...", "how": ["..."], "when_to_use": "...", "when_not": "...", "anti_patterns": ["..."], "quotes": [{"ts": "[h:mm:ss]", "text": "..."}], "example": "..."}],
  "decision_rules": [{"when": "...", "do": "...", "because": "...", "ts": "[h:mm:ss]"}],
  "terms": [{"term": "...", "definition": "..."}],
@@ -139,7 +159,7 @@ const CANON_SCHEMA = {
       type: 'array',
       items: {
         type: 'object',
-        properties: { id: { type: 'string' }, title: { type: 'string' }, group: { type: 'string' }, video_ids: { type: 'array', items: { type: 'string' } } },
+        properties: { id: { type: 'string' }, title: { type: 'string' }, group: { type: 'string' }, video_ids: { type: 'array', items: { type: 'string' } }, shorts: { type: 'number' } },
         required: ['id', 'title', 'video_ids'],
       },
     },
@@ -154,8 +174,11 @@ const canon = await agent(
   `You are the canonicalize stage of channel-to-skill for "${channel}". Merge every per-video extraction in ${kbDir}/extractions/*.json into ONE frozen taxonomy at ${kbDir}/taxonomy.json. This is the step that stops "agentic-rag", "agent-rag" and "rag-agents" from all existing. Mode: ${mode}.
 
 READ EFFICIENTLY. Do not cat every file. Start with a compact view (node is at ${NODE}):
-  ${NODE} -e 'const fs=require("fs"),d="${kbDir}/extractions";for(const f of fs.readdirSync(d)){const j=JSON.parse(fs.readFileSync(d+"/"+f));console.log(j.video_id,"|",j.published,"|",j.title);console.log("  thesis:",j.thesis);for(const c of j.concepts||[])console.log("  -",c.name,"::",c.definition)}'
+  ${NODE} -e 'const fs=require("fs"),d="${kbDir}/extractions";for(const f of fs.readdirSync(d)){const j=JSON.parse(fs.readFileSync(d+"/"+f));console.log(j.video_id,"|",j.kind||"video","|",j.published,"|",j.title);console.log("  thesis:",j.thesis);for(const c of j.concepts||[])console.log("  -",c.name,"::",c.definition)}'
 Then open individual files only where names look like the same idea and you need the definitions to decide.
+${nShorts ? `
+SHORTS AS A SIGNAL: ${nShorts} of the ${fetched.videos.length} sources are Shorts, clips the creator cut out of longer material because that one principle landed. A Short almost never introduces a new concept; it restates one. So: fold every Short into the concept it restates (its video_id goes in that concept's video_ids like any other source), and count Shorts per concept in a "shorts" field. Two or more Shorts on the same idea is strong evidence the idea is central to how this creator thinks: let it clear the page threshold on its own, and surface it in the voice profile when the pattern is clear. Never create a concept whose only sources are Shorts unless at least three of them teach it.
+` : ''}
 ${mode === 'fold-in' ? `\nFOLD-IN MODE: ${kbDir}/taxonomy.json already exists. Read it first. Existing ids are FROZEN: never rename or remove one. Add new videos to existing concepts' video_ids where they fit, add new concepts only for genuinely new ideas, and bump "version" by 1.\n` : ''}
 RULES
 - One concept = one durable idea the channel returns to. Merge synonyms and near-duplicates; keep the creator's own name as the title and list the others as aliases.
@@ -170,11 +193,11 @@ RULES
 WRITE ${kbDir}/taxonomy.json:
 {"channel": "${channel}", "slug": "${slug}", "version": <1 or bumped>, "generated": "${today}",
  "groups": [{"id": "...", "title": "...", "description": "..."}],
- "concepts": [{"id": "...", "title": "...", "description": "one sentence", "aliases": ["..."], "group": "<group id>", "video_ids": ["..."], "folded_in": ["names folded into this concept"]}],
+ "concepts": [{"id": "...", "title": "...", "description": "one sentence", "aliases": ["..."], "group": "<group id>", "video_ids": ["..."], "shorts": <count of video_ids that are Shorts>, "folded_in": ["names folded into this concept"]}],
  "superseded": [{"video_id": "...", "superseded_by": "...", "note": "..."}],
  "voice": ["..."], "contradictions": [{"claim": "...", "video_ids": ["...", "..."]}]}
 
-Do NOT run git commands. Return concepts (id, title, group, video_ids), folded (count), superseded (count), groups (ids).`,
+Do NOT run git commands. Return concepts (id, title, group, video_ids, shorts), folded (count), superseded (count), groups (ids).`,
   { label: 'canonicalize', effort: 'high', schema: CANON_SCHEMA }
 )
 if (!canon) throw new Error('canonicalize agent failed')
@@ -229,7 +252,7 @@ TEMPLATE: practitioner voice, "Use X when Y", never "the video explains". Target
 
 ## Sources
 - [<Video title>](https://www.youtube.com/watch?v=<id>) (<published>): "<[h:mm:ss] best quote>"
-  (every contributing video, newest first; a superseded video gets "(older take)" after its date)
+  (every contributing video, newest first; a superseded video gets "(older take)" after its date; a Short, per the extraction's "kind", gets "(short)" after its date. Long-form sources first, then Shorts: the long video carries the reasoning, the Short carries the sharpest phrasing)
 
 SIBLING CONCEPTS (the only valid link targets):
 ${conceptIndex}
@@ -276,7 +299,8 @@ Do NOT run git commands. Return path and tokens_est.`,
 5. Tells and smells: "if you see X, you're in trouble Y."
 No term definitions (glossary), no prose paragraphs (concepts). Compact tables and rules; what you'd keep on one printed page. Cite the concept page in brackets where one applies. Max ~1,200 tokens.
 Get every decision rule compactly with: ${compactRules}
-Also read the "voice" array in ${kbDir}/taxonomy.json and open with a 3-5 line "How ${channel} decides" block.
+Also read the "voice" array in ${kbDir}/taxonomy.json and open with a 3-5 line "How ${channel} decides" block.${nShorts ? `
+Concepts with a high "shorts" count in taxonomy.json are the rules the creator clipped out to stand alone; when space forces a choice, those rules go first, in the creator's own phrasing.` : ''}
 Valid concept ids: ${canon.concepts.map((c) => c.id).join(', ')}
 Do NOT run git commands. Return path and tokens_est.`,
     { label: 'cheatsheet', phase: 'Support', schema: SUPPORT_SCHEMA }),
@@ -294,10 +318,10 @@ READ: ${kbDir}/taxonomy.json (groups, concepts, voice, superseded). Then the "##
 SKILL.md STRUCTURE:
 ---
 name: ${slug}
-description: "Knowledge skill distilled from ${channel}'s YouTube channel (${fetched.videos.length} videos). Use when applying ${channel}'s methods for <3-6 key topics>, deciding the way they would, or referencing what they teach about <topic>."
+description: "Knowledge skill distilled from ${channel}'s YouTube channel (${videoLabel}). Use when applying ${channel}'s methods for <3-6 key topics>, deciding the way they would, or referencing what they teach about <topic>."
 ---
 # ${channel}
-**Source**: YouTube channel · **Videos**: ${fetched.videos.length} · **Concepts**: ${canon.concepts.length} · **Generated**: ${today}
+**Source**: YouTube channel · **Videos**: ${videoLabel} · **Concepts**: ${canon.concepts.length} · **Generated**: ${today}
 
 ## How to Use This Skill
 - Without arguments: apply the core frameworks below.
@@ -328,7 +352,7 @@ description: "Knowledge skill distilled from ${channel}'s YouTube channel (${fet
 ## Scope & Limits
 <what the channel covers and does not; that content is synthesized from transcripts, not the creator's words verbatim; date range of the videos>
 
-sources.md STRUCTURE: a table, newest first: | Date | Title (linked to youtube.com/watch?v=id) | Concepts (linked) |. Mark superseded videos with "(older take)". Use ${kbDir}/raw/manifest.json for dates and titles and taxonomy.json for the concept mapping.
+sources.md STRUCTURE: a table, newest first: | Date | Kind | Title (linked to youtube.com/watch?v=id) | Concepts (linked) |. Kind is "video" or "short" from ${kbDir}/raw/manifest.json. Mark superseded videos with "(older take)". Use the manifest for dates and titles and taxonomy.json for the concept mapping.
 
 Every relative link must resolve. Do NOT run git commands. Return path (of SKILL.md) and tokens_est.`,
   { label: 'skill.md', phase: 'Support', schema: SUPPORT_SCHEMA }
@@ -347,6 +371,10 @@ Report its output verbatim. If it prints E3 broken links or E4 missing timestamp
 return {
   slug, mode,
   transcripts: fetched.videos.length,
+  long_form: nLong,
+  shorts: nShorts,
+  transcript_words: totalWords,
+  extract_batches: batches.length,
   fetch_summary: fetched.summary,
   extracted: extractedFiles.length,
   extract_reused: alreadyExtracted.size,
