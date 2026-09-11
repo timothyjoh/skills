@@ -30,7 +30,7 @@ NODE=$(command -v node || echo ~/.nvm/versions/node/*/bin/node)
 
 If `SKILLS_ROOT` is not writable, or sits inside a plugin cache (the path contains `/plugins/`), the skill was installed as a managed plugin. Use the project's `.claude/skills` as `SKILLS_ROOT` instead and say so.
 
-For a channel with slug `<slug>` (kebab-case channel name, e.g. `cole-medin`):
+For a channel with slug `<slug>` (`expert-<person>` or `topic-kb-<topic>`, see "Naming the generated skill" below; e.g. `expert-cole-medin`):
 
 | Path | Holds | Committed |
 |---|---|---|
@@ -41,9 +41,19 @@ The user can relocate a generated skill afterwards; keep the working data beside
 
 ## Step 1: Identify the channel
 
-Take the argument as an `@handle` or a channel URL. Derive `SLUG` from the channel's display name once the enumerator prints it. If `$ROOT/kb/<slug>/scope.json` already exists this is a **fold-in** run (see the last section).
+Take the argument as an `@handle` or a channel URL. Look for an existing scope for this channel first: `grep -l '"handle": "@Handle"' $ROOT/kb/*/scope.json`. If one exists this is a **fold-in** run (see the last section): take `SLUG` from its `slug` field and never rename it, even when it predates the naming convention. Otherwise set a provisional `SLUG` from the handle in kebab-case; Step 3 replaces it with the skill's real name.
 
 Use absolute paths from here on: `KB="$ROOT/kb/$SLUG"`, `OUT="$SKILLS_ROOT/$SLUG"`.
+
+## Naming the generated skill
+
+The slug names the skill directory, the `name:` frontmatter, `scope.json` `slug`, and `manifest.json`. Pick it by what the source is centered on:
+
+- `expert-<person>` when the source is one person's teaching and the value is how that person thinks and decides: `expert-cole-medin`, `expert-dan-mohler`. Use the person's name, not the channel brand, unless the brand is the only name they go by.
+- `topic-kb-<topic>` when the source is centered on a subject: several creators with real share, a brand or institution with interchangeable presenters, an interview or news show, or a course or collection on one subject: `topic-kb-sales-negotiation`, `topic-kb-rust-async`. Use one to three kebab-case words that name the subject the way a practitioner would search for it.
+
+Signals: one creator behind nearly every video, and concepts that are that creator's own positions, means expert. More than one creator with a real share of the videos, or a channel named for a company, publication, or show, means topic. A person's channel that is really an interview show is a topic. Slugs are lowercase ASCII kebab-case. Fold-in never renames an existing skill, whatever convention it was built under; existing skills keep their slug.
+
 
 ## Step 2: Enumerate (zero LLM tokens)
 
@@ -61,9 +71,11 @@ Show the user that summary as printed. If the channel has more long-form videos 
 
 Spawn **one** agent to read `$KB/catalog.json` and return a triage proposal. Give it this brief:
 
-> Read catalog.json. Every entry has `kind: video` (long-form) or `kind: short`. Propose a scope for turning this channel into a skill. Return: (1) three candidate cuts, each a *mix* of long-form and Shorts with both counts and a one-line rationale: typically *recent* (long-form from the last 12 to 24 months plus the top Shorts by views from the same span), *core* (recent plus the highest-viewed older long-form and older Shorts), and *broad* (long-form capped at 100 plus Shorts capped at 300). Weight the mix by what the channel actually is: on a clip channel most of the wisdom is in the Shorts; on a lecture channel the Shorts are teasers and a small top-by-views slice is enough. Budget: a long-form video costs about 30k tokens to process, a Short about 3k. (2) clusters of videos that are obviously the same topic by title, description, or chapters, with the newest marked *keep* and the rest *drop*. Be conservative on long-form: titles hide the payoff, so drop only clear re-uploads and series repeats. Be aggressive on Shorts: a clip channel restates one principle dozens of times, so keep the highest-viewed Short per principle and drop the rest, and work only from the top Shorts by views (the undated tail is not worth clustering). (3) anything that is plainly not knowledge (vlogs, reactions, streams, physique and lifestyle clips, memes) to exclude. Output the cut lists as arrays of video ids.
+> Read catalog.json. Every entry has `kind: video` (long-form) or `kind: short`. Propose a scope for turning this channel into a skill. Return: (1) three candidate cuts, each a *mix* of long-form and Shorts with both counts and a one-line rationale: typically *recent* (long-form from the last 12 to 24 months plus the top Shorts by views from the same span), *core* (recent plus the highest-viewed older long-form and older Shorts), and *broad* (long-form capped at 100 plus Shorts capped at 300). Weight the mix by what the channel actually is: on a clip channel most of the wisdom is in the Shorts; on a lecture channel the Shorts are teasers and a small top-by-views slice is enough. Budget: a long-form video costs about 30k tokens to process, a Short about 3k. (2) clusters of videos that are obviously the same topic by title, description, or chapters, with the newest marked *keep* and the rest *drop*. Be conservative on long-form: titles hide the payoff, so drop only clear re-uploads and series repeats. Be aggressive on Shorts: a clip channel restates one principle dozens of times, so keep the highest-viewed Short per principle and drop the rest, and work only from the top Shorts by views (the undated tail is not worth clustering). (3) anything that is plainly not knowledge (vlogs, reactions, streams, physique and lifestyle clips, memes) to exclude. (4) What the channel is centered on: `expert` when one person teaches their own methods and the value is how they think, `topic` when it is a brand, institution, interview show, or several presenters teaching a subject. Return the proposed skill name: `expert-<person>` (the person's kebab-case name) or `topic-kb-<topic>` (one to three kebab-case words naming the subject), with a one-line reason. Output the cut lists as arrays of video ids.
 
-Then ask the user **one** question with those cuts as options, plus "Other". Each option names both counts ("62 long-form + 180 Shorts"). Default recommendation: the cut closest to 60 to 100 long-form videos, or on a clip channel the one whose Shorts count is closest to 200. Give the estimate in one line: long-form at about 30k tokens each and Shorts at about 3k, so 100 long-form is roughly 3M tokens and 15 to 20 minutes, and 300 Shorts add about 1M; transcripts are free.
+Then ask the user **one** question with those cuts as options, plus "Other". Each option names both counts ("62 long-form + 180 Shorts"). Default recommendation: the cut closest to 60 to 100 long-form videos, or on a clip channel the one whose Shorts count is closest to 200. Give the estimate in one line: long-form at about 30k tokens each and Shorts at about 3k, so 100 long-form is roughly 3M tokens and 15 to 20 minutes, and 300 Shorts add about 1M; transcripts are free. State the proposed skill name and its reason in the question text, so "Other" can override it without a second question.
+
+Set `SLUG` to the final name. If it differs from the provisional slug, move the working directory before writing anything else: `mv "$KB" "$ROOT/kb/$SLUG"`, then reset `KB` and `OUT`. Only `catalog.json` lives there at this point.
 
 Write the choice to `$KB/scope.json`:
 
@@ -125,7 +137,7 @@ Report: long-form and Shorts in scope vs. transcripts fetched vs. skipped; conce
 Re-run `/channel-to-skill @Handle` later. When `scope.json` exists:
 
 1. Re-run Step 2. Diff `catalog.json` against `scope.videos` and `raw/manifest.json`: the new ids, long-form and Shorts alike, are the candidates.
-2. Triage only the new videos (Step 3, smaller question). Append the chosen ones to `scope.videos`, each with its `kind`.
+2. Triage only the new videos (Step 3, smaller question, no naming item: the existing slug stays). Append the chosen ones to `scope.videos`, each with its `kind`.
 3. Step 4 with `mode: "fold-in"`. Fetch and extract skip everything already done; canonicalize reads the existing taxonomy and **never renames or removes an id**, so links in the skill stay valid; render re-writes only concepts whose `video_ids` changed plus any new ones; support files and `SKILL.md` regenerate.
 4. Steps 5 and 6.
 

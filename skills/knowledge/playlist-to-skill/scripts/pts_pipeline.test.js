@@ -4,7 +4,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { playlistUrl, catalogAndScope } = require('./pts_enumerate');
+const { playlistUrl, catalogAndScope, creatorCounts } = require('./pts_enumerate');
 const playlist = playlistUrl('https://www.youtube.com/watch?v=aaaaaaaaaaa&list=PLfixture&index=3&t=10');
 const fixture = { id: 'PLfixture', title: 'Mixed creators', playlist_count: 5, entries: [
   { id: 'aaaaaaaaaaa', title: 'Old low-view lesson', duration: 20, view_count: 0, channel: 'One' },
@@ -139,4 +139,17 @@ test('manual additions parse IDs, carry metadata, and stay current across fold-i
   assert.equal(manual.current, true);
   assert.equal(scope.videos.filter((x) => x.current).length, 2);
   assert.equal(scope.videos.find((x) => x.id === 'aaaaaaaaaaa').current, false);
+});
+
+test('--slug names the skill, is validated, and wins over the previous default slug', () => {
+  const first = catalogAndScope(fixture, playlist).scope;
+  assert.equal(first.slug, `playlist-${playlist.id.toLowerCase()}`);
+  const named = catalogAndScope(fixture, playlist, first, 'expert-three').scope;
+  assert.equal(named.slug, 'expert-three');
+  assert.equal(catalogAndScope(fixture, playlist, named).scope.slug, 'expert-three');
+  assert.throws(() => catalogAndScope(fixture, playlist, null, 'Expert Three'), /Invalid slug/);
+  assert.throws(() => catalogAndScope(fixture, playlist, null, 'topic-kb-'), /Invalid slug/);
+  const counts = creatorCounts(named);
+  assert.ok(counts.length >= 1 && counts.every(([, n]) => n > 0));
+  assert.deepEqual(counts.map(([, n]) => n), [...counts.map(([, n]) => n)].sort((a, b) => b - a));
 });

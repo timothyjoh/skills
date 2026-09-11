@@ -23,14 +23,14 @@ Accept a YouTube URL with a `list` parameter, including a watch, Shorts, or yout
 
 Resolve `SKILL_DIR` from the path used to reach this SKILL.md, without resolving symlinks. Set `SKILLS_ROOT` to its parent and `ROOT` to the parent of `SKILLS_ROOT`. If the skills root is unwritable or inside a plugin cache, use the project's `.claude/skills` and `.claude` instead and say so.
 
-Use `SLUG=playlist-<lowercase playlist ID>` to keep runs stable across title changes. Set absolute paths:
+Start with the provisional `SLUG=playlist-<lowercase playlist ID>`; step 3 replaces it with the skill's real name once the listing shows who teaches what. Set absolute paths:
 
 - `KB=$ROOT/kb/$SLUG`, for catalog, scope, raw transcripts, extractions, and taxonomy.
 - `OUT=$SKILLS_ROOT/$SLUG`, for the generated skill.
 - `SCRIPTS=$SKILL_DIR/scripts` and `WORKFLOW=$SKILL_DIR/workflow/playlist-to-skill.js`.
 - `NODE` to the absolute path returned by `command -v node`.
 
-Before using that default, look for an existing scope for this playlist: `grep -l '"playlist_id": "<ID>"' $ROOT/kb/*/scope.json`. If one exists, take `SLUG` from its `slug` field and use that directory, even when it was renamed to a readable name such as `dan-mohler`. A renamed skill keeps its `name` frontmatter, `manifest.json`, and `scope.json` `slug` in sync with the directory name. The enumerator rejects a working directory that belongs to another playlist. Preserve working data with the generated skill so future runs retain provenance.
+Before using that default, look for an existing scope for this playlist: `grep -l '"playlist_id": "<ID>"' $ROOT/kb/*/scope.json`. If one exists this is a fold-in: take `SLUG` from its `slug` field, use that directory, skip step 3, and never rename it, even when it predates the naming convention below. A renamed skill keeps its `name` frontmatter, `manifest.json`, and `scope.json` `slug` in sync with the directory name. The enumerator rejects a working directory that belongs to another playlist. Preserve working data with the generated skill so future runs retain provenance.
 
 ## 2. Enumerate everything
 
@@ -40,13 +40,35 @@ Before using that default, look for an existing scope for this playlist: `grep -
 
 The enumerator normalizes the URL, lists the whole playlist, and writes `catalog.json` and `scope.json` with `chosen_cut: "all"`. It ignores local yt-dlp configuration so a configured range or filter cannot shrink the scope. It rejects subset flags. See the [yt-dlp selection options](https://github.com/yt-dlp/yt-dlp#video-selection).
 
-Show its counts, then proceed. There is no triage agent, approval step, or subset question. Duplicate occurrences keep their playlist positions but fetch and extract their identical video ID once. Different IDs stay in scope even if they look like reuploads. Unavailable entries without an ID remain recorded as coverage gaps; every entry with an ID gets a fetch attempt.
+Show its counts and the `Creators:` line, then proceed. There is no triage agent, approval step, or subset question. Duplicate occurrences keep their playlist positions but fetch and extract their identical video ID once. Different IDs stay in scope even if they look like reuploads. Unavailable entries without an ID remain recorded as coverage gaps; every entry with an ID gets a fetch attempt.
 
 Give a rough processing estimate from the full scope, about 30k tokens per ordinary video and 3k per recognized Short. Playlist listings do not reliably identify Shorts, so describe unknown types conservatively as ordinary videos. This estimate is informational, never a reason to prune the scope. Respect an explicit resource budget by checkpointing and reporting remaining work when needed, keeping the whole scope intact.
 
-If the user passed `--dry-run`, stop here after printing the counts, estimate, and resolved workflow call. No transcript fetching or LLM processing occurs. Normal invocation proceeds automatically.
+## 3. Name the skill
 
-## 3. Fetch, extract, and render
+Skip this step on a fold-in. Otherwise decide the name from the playlist title, the `Creators:` line, and the entry titles in `catalog.json`, following the convention below. Then move the working directory and stamp the slug into it:
+
+```bash
+SLUG=<expert-name or topic-kb-topic>
+mv "$ROOT/kb/playlist-<lowercase playlist ID>" "$ROOT/kb/$SLUG"
+KB="$ROOT/kb/$SLUG"; OUT="$SKILLS_ROOT/$SLUG"
+"$NODE" "$SCRIPTS/pts_enumerate.js" "$PLAYLIST_URL" --kb-dir "$KB" --slug "$SLUG"
+```
+
+The second enumerate run is a flat listing that takes seconds; it rewrites `scope.json` and `catalog.json` with the new slug and rejects a slug that is not lowercase kebab-case. Tell the user the name and which convention it follows in one line. They can override it with "Other"-style feedback before the workflow starts; do not ask a question for it.
+
+If the user passed `--dry-run`, stop here with the counts, estimate, chosen name, and resolved workflow call printed. No transcript fetching or LLM processing occurs. Normal invocation proceeds automatically.
+
+## Naming the generated skill
+
+The slug names the skill directory, the `name:` frontmatter, `scope.json` `slug`, and `manifest.json`. Pick it by what the source is centered on:
+
+- `expert-<person>` when the source is one person's teaching and the value is how that person thinks and decides: `expert-cole-medin`, `expert-dan-mohler`. Use the person's name, not the channel brand, unless the brand is the only name they go by.
+- `topic-kb-<topic>` when the source is centered on a subject: several creators with real share, a brand or institution with interchangeable presenters, an interview or news show, or a course or collection on one subject: `topic-kb-sales-negotiation`, `topic-kb-rust-async`. Use one to three kebab-case words that name the subject the way a practitioner would search for it.
+
+Signals: one creator behind nearly every video, and concepts that are that creator's own positions, means expert. More than one creator with a real share of the videos, or a channel named for a company, publication, or show, means topic. A person's channel that is really an interview show is a topic. Slugs are lowercase ASCII kebab-case. Fold-in never renames an existing skill, whatever convention it was built under; existing skills keep their slug.
+
+## 4. Fetch, extract, and render
 
 Set `mode` to `fold-in` if `taxonomy.json` exists, otherwise `build`. Use the playlist title as the workflow's `channel` argument, a compatibility field for the collection label, not an assertion that the curator created every video.
 
@@ -74,7 +96,7 @@ The pipeline does the following:
 
 A large missing-caption fraction is a reported limitation, not a reason to drop remaining entries or abort their processing. Continue through every fetchable ID and process every readable transcript. If none are readable, report that and stop without inventing a skill. Retry recorded failures with `pts_fetch.js --kb-dir "$KB" --retry-failed`; leave successful transcripts and extractions cached.
 
-## 4. Verify and report
+## 5. Verify and report
 
 ```bash
 "$NODE" "$SCRIPTS/pts_validate.js" --skill-dir "$OUT" --kb-dir "$KB" --write-manifest

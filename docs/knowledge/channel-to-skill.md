@@ -14,6 +14,10 @@ Reach for it when you keep going back to a creator's videos to remember how they
 
 The generated skill lands in the same skills root the `channel-to-skill` skill lives in (`.claude/skills/<slug>/` for a project install). Working data (catalog, scope, raw transcripts, extractions, taxonomy) lands beside it under `kb/<slug>/` and is meant to be committed: it is the provenance behind every rule, and a later fold-in of new videos needs it.
 
+## What the skill is called
+
+The generated skill is named for what the channel is centered on. A channel that is one person teaching their own methods becomes `expert-<person>` (`expert-cole-medin`): the value is how that person thinks, and the name says so. A channel centered on a subject, whether a brand, an institution, an interview show, or several presenters, becomes `topic-kb-<topic>` (`topic-kb-sales-negotiation`). The triage agent proposes the name with a reason, and the one question the run asks you states it, so you can override it in the same answer. A skill built before this convention keeps its name; fold-in never renames.
+
 ## Scope before spend
 
 Listing a channel costs nothing, so the skill lists all of it first, both tabs: long-form counts, runtime, per-year distribution and chapter markers; Shorts counts, median length and view distribution. One agent proposes three cuts (recent, core, broad), each a mix of long-form and Shorts weighted by what the channel is, flags obvious re-uploads and restated clips, and you pick. That one question is the only human decision in the run. Everything after it runs as a background workflow you can watch with `/workflows`.
@@ -39,6 +43,9 @@ Because that is a folder of summaries, and an agent cannot decide with it. A con
 
 **Does it include Shorts?**
 Yes, from the channel's `/shorts` tab, ranked by views since the flat listing carries no dates. Pass `--tabs videos` to leave them out on a channel where they are plainly teasers. Regular uploads under 90 seconds were once dropped as well; nothing is dropped by duration now unless you ask for it.
+
+**Why is my skill called `expert-...` or `topic-kb-...`?**
+Because that prefix tells an agent what kind of knowledge it is loading: one person's judgment, or a subject's shared body of practice. The name is chosen at triage and shown in the question the run asks; answer with a different name to override it.
 
 **Does it strip sponsor reads?**
 By instruction at extraction, yes. Transcripts are not pre-trimmed.

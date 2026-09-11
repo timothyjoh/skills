@@ -20,6 +20,10 @@ The skill enumerates all entries, then downloads captions and metadata sequentia
 
 Add `--dry-run` to see the full scope and processing estimate without fetching transcripts or generating content. Normal invocation goes straight through. An explicit resource budget may require a checkpoint, but never changes which videos belong in scope.
 
+## What the skill is called
+
+After enumeration the run names the skill for what the playlist is centered on. A playlist that is one person's teaching becomes `expert-<person>` (`expert-dan-mohler`). A playlist centered on a subject, across several creators or as a course or collection, becomes `topic-kb-<topic>` (`topic-kb-rust-async`). The enumerator prints the creators and their video counts, which is the main signal, and the run tells you the name and its reason in one line rather than asking. Reruns find the playlist by its ID, so a skill keeps its name whatever it was built under.
+
 ## The generated skill
 
 The output contains `SKILL.md`, `concepts/`, `glossary.md`, `patterns.md`, `cheatsheet.md`, `sources.md`, and `manifest.json`. Raw transcripts and extractions stay beside the skill as working data for provenance and later updates.
@@ -36,6 +40,9 @@ They remain visible in the coverage report. The skill processes the available tr
 
 **What happens when the playlist changes?**
 A rerun includes every new ID automatically and reuses earlier work. Removed videos remain marked as previous sources. Concept IDs stay stable.
+
+**Can I choose a different name?**
+Yes. Say so when the run announces the name, before the workflow starts. The name must be lowercase kebab-case, and the `expert-` or `topic-kb-` prefix is the convention, not a technical requirement.
 
 **Can I add a video that is not in the playlist?**
 Yes. When the playlist belongs to someone else, or a related video lives outside it, ask for those videos to be added and give their URLs or IDs. They join the scope as manual additions, get processed in a fold-in run, and stay in the skill across later reruns. The playlist itself is never pruned.

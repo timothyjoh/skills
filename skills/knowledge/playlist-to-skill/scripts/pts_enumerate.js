@@ -16,7 +16,17 @@ function playlistUrl(input) {
   return { id, url: `https://www.youtube.com/playlist?list=${id}` };
 }
 
-function catalogAndScope(info, playlist, previous) {
+const SLUG_RE = /^[a-z0-9][a-z0-9-]*[a-z0-9]$/;
+
+// Creators by number of current videos, most first: the signal for expert- vs topic-kb- naming.
+function creatorCounts(scope) {
+  const counts = new Map();
+  for (const v of scope.videos) if (v.current) counts.set(v.creator || '(unknown)', (counts.get(v.creator || '(unknown)') || 0) + 1);
+  return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+}
+
+function catalogAndScope(info, playlist, previous, slug) {
+  if (slug !== undefined && !SLUG_RE.test(slug)) throw new Error(`Invalid slug "${slug}": lowercase ASCII kebab-case, e.g. expert-dan-mohler or topic-kb-sales-negotiation`);
   if (info.id !== playlist.id || !Array.isArray(info.entries)) throw new Error('yt-dlp did not return the requested playlist');
   if (previous && previous.playlist_id !== playlist.id) throw new Error('Working directory belongs to another playlist');
   if (Number.isFinite(info.playlist_count) && info.playlist_count > info.entries.length) {
@@ -49,7 +59,7 @@ function catalogAndScope(info, playlist, previous) {
   const title = info.title || playlist.id;
   const common = {
     playlist: title, playlist_id: playlist.id, playlist_url: playlist.url,
-    slug: previous?.slug || `playlist-${playlist.id.toLowerCase()}`,
+    slug: slug || previous?.slug || `playlist-${playlist.id.toLowerCase()}`,
     channel: title, handle: playlist.url,
     updated: new Date().toISOString().slice(0, 10),
   };
@@ -63,10 +73,11 @@ function main(argv) {
   const a = {};
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--kb-dir' && argv[i + 1]) a.kbDir = argv[++i];
+    else if (argv[i] === '--slug' && argv[i + 1]) a.slug = argv[++i];
     else if (!argv[i].startsWith('-') && !a.url) a.url = argv[i];
     else throw new Error(`Unknown argument: ${argv[i]}. Subset options are not supported.`);
   }
-  if (!a.kbDir || !a.url) throw new Error('usage: pts_enumerate.js <YouTube URL with list=...> --kb-dir <dir>');
+  if (!a.kbDir || !a.url) throw new Error('usage: pts_enumerate.js <YouTube URL with list=...> --kb-dir <dir> [--slug <expert-name | topic-kb-topic>]');
   const playlist = playlistUrl(a.url);
   const scopePath = path.join(a.kbDir, 'scope.json');
   const previous = fs.existsSync(scopePath) ? JSON.parse(fs.readFileSync(scopePath, 'utf8')) : null;
@@ -74,7 +85,7 @@ function main(argv) {
   const r = spawnSync('yt-dlp', ['--ignore-config', '--yes-playlist', '--flat-playlist', '-J', playlist.url],
     { encoding: 'utf8', timeout: 600000, maxBuffer: 1 << 28 });
   if (r.error || r.status !== 0) throw new Error(r.error?.message || r.stderr || `yt-dlp exit ${r.status}`);
-  const { catalog, scope } = catalogAndScope(JSON.parse(r.stdout), playlist, previous);
+  const { catalog, scope } = catalogAndScope(JSON.parse(r.stdout), playlist, previous, a.slug);
   fs.mkdirSync(a.kbDir, { recursive: true });
   for (const [name, data] of [['catalog', catalog], ['scope', scope]]) {
     const file = path.join(a.kbDir, `${name}.json`);
@@ -82,10 +93,12 @@ function main(argv) {
     fs.renameSync(`${file}.tmp`, file);
   }
   console.log(`${scope.playlist}: ${catalog.entry_count} playlist entries, ${scope.videos.filter(v => v.current).length} unique video IDs, ${catalog.entries.filter(e => !e.id).length} unavailable entries without IDs. All included.`);
+  const creators = creatorCounts(scope);
+  console.log(`Creators: ${creators.slice(0, 5).map(([c, n]) => `${c} ${n}`).join(', ')}${creators.length > 5 ? `, +${creators.length - 5} more` : ''}`);
   console.log(`slug=${scope.slug}; ${scope.videos.filter(v => !v.current).length} previous sources retained for fold-in`);
 }
 
 if (require.main === module) {
   try { main(process.argv.slice(2)); } catch (e) { console.error(e.message); process.exitCode = 1; }
 }
-module.exports = { playlistUrl, catalogAndScope };
+module.exports = { playlistUrl, catalogAndScope, creatorCounts };
