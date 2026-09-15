@@ -2,7 +2,7 @@
 
 [![skills.sh](https://skills.sh/b/timothyjoh/skills)](https://skills.sh/timothyjoh/skills)
 
-Agent skills I use to turn what I watch and read into something an agent can *work with*: a YouTube channel into a skill that decides the way the creator decides, playlists into a transcript pipeline, transcripts into a cross-linked knowledge base. Plus a few for explaining things with a picture and plain words.
+Agent skills I use to turn what I watch and read into something an agent can *work with*: a YouTube channel into a skill that decides the way the creator decides, playlists into a transcript pipeline, transcripts into a cross-linked knowledge base. Plus a few for explaining things with a picture and plain words, and one for writing Jira cards a developer and a tester can both act on.
 
 ## Installation
 
@@ -82,6 +82,7 @@ Explaining things: to a reader who is lost, or to one who needs a picture.
 - **[show-me](./skills/writing/show-me/SKILL.md)** (by [Dex Horthy, HumanLayer](https://www.humanlayer.com/blog/show-me-skill), MIT): Explain the current topic visually with the smallest view that makes the point: pseudocode, a call tree, a component or file tree, Mermaid, a `diff`, or one focused HTML file. Docs: [show-me](./docs/writing/show-me.md).
 - **[asd-ste100](./skills/writing/asd-ste100/SKILL.md)**: Rewrite English so a reader who cannot ask a clarifying question cannot misread it, on the principles of the ASD-STE100 standard. Vendored (MIT) from [danyuchn/asd-ste100-skill](https://github.com/danyuchn/asd-ste100-skill); `wat` depends on it. Docs: [asd-ste100](./docs/writing/asd-ste100.md).
 - **[wat](./skills/writing/wat/SKILL.md)**: Re-explain the previous answer with one picture and plain words. Fires on a bare "wat", on "ELI5", or when the reader says they are lost. Docs: [wat](./docs/writing/wat.md).
+- **[jira-writing](./skills/writing/jira-writing/SKILL.md)**: Write or rewrite a Jira card body for a bug, story or task under a per-section word budget: one visual, path-and-symbol references, a typed Contract block when a shape changes, and QA steps a tester can run alone. Depends on `show-me` and `asd-ste100`. Docs: [jira-writing](./docs/writing/jira-writing.md).
 
 ### Media
 

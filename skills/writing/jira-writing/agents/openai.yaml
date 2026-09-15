@@ -1,0 +1,3 @@
+interface:
+  display_name: "Jira Writing"
+  short_description: "Write a short, testable Jira card for a bug, story or task"

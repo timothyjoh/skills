@@ -17,6 +17,7 @@
     "channel-to-skill",
     "playlist-to-skill",
     "writing",
+    "jira",
     "media",
     "browser-tour",
     "tts-voice"
@@ -27,6 +28,7 @@
     "./skills/writing/show-me",
     "./skills/writing/wat",
     "./skills/writing/asd-ste100",
+    "./skills/writing/jira-writing",
     "./skills/media/storytime",
     "./skills/media/browser-tour",
     "./skills/media/tts-voice"
