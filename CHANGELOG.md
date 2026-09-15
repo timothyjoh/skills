@@ -1,5 +1,11 @@
 # timothyjoh-skills
 
+## 0.6.0
+
+### Minor Changes
+
+- [`f62fb2a`](https://github.com/timothyjoh/skills/commit/f62fb2aae5e22c0c1e9dbef9dbc9c26839b64f66) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Add `jira-writing` to the writing bucket: draft or rewrite a Jira card body for a bug, story or task under a per-section word budget, with one `show-me` visual, an `asd-ste100` sentence pass, a typed Contract block when a shape crosses a boundary, and a cross-check that every desired behaviour has an acceptance criteria line.
+
 ## 0.5.0
 
 ### Minor Changes
