@@ -56,7 +56,7 @@ It writes the skills into your repo as ordinary files you own and can edit. Pull
 The skills shell out to a few tools; each `SKILL.md` names what it needs under Prerequisites. Across the set:
 
 - [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) on `PATH` (`brew install yt-dlp`). No YouTube API key.
-- Node 18 or newer, for the bundled scripts.
+- Node 18 or newer for most bundled scripts; `delegate-t3-agent` needs Node 24 or newer and a running T3 Code installation.
 - `ffmpeg` and `python3` for the media skills. `tts-voice` needs a local Chatterbox install; `browser-tour` needs the Claude-in-Chrome extension.
 
 ## Reference
@@ -93,6 +93,14 @@ Producing audio and narrated walkthroughs.
 - **[storytime](./skills/media/storytime/SKILL.md)**: Render a story as a multi-voice MP3: tag the prose by speaker, cast a local voice per character, stitch with ffmpeg. Docs: [storytime](./docs/media/storytime.md).
 - **[browser-tour](./skills/media/browser-tour/SKILL.md)**: Drive Claude-in-Chrome through a narrated, pausing tour: research, product wizard, plan narration, or post-implementation demo. Docs: [browser-tour](./docs/media/browser-tour.md).
 - **[tts-voice](./skills/media/tts-voice/SKILL.md)**: Free local text-to-speech with voice cloning, Chatterbox under the hood. Needs a local Chatterbox install. Docs: [tts-voice](./docs/media/tts-voice.md).
+
+### Development
+
+Delegating work to project agents and collecting their results.
+
+**Model-invoked**
+
+- **[delegate-t3-agent](./skills/development/delegate-t3-agent/SKILL.md)**: Start a T3 Code session in a registered project, collect its reply, and continue the task. Includes project discovery, retry records and optional parent callbacks. Docs: [delegate-t3-agent](./docs/development/delegate-t3-agent.md).
 
 ## Developing
 

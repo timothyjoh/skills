@@ -3,6 +3,7 @@ Skills are organized into bucket folders under `skills/`:
 - `knowledge/`: turning sources (YouTube channels, playlists, transcripts) into knowledge an agent can work with
 - `writing/`: explaining things, to a lost reader or with a picture
 - `media/`: producing audio and narrated walkthroughs: TTS engines, multi-voice stories, browser tours
+- `development/`: delegating coding work and collecting results from project agents
 
 Every bucket is promoted: every skill must have a reference in the top-level `README.md` and an entry in `.claude-plugin/plugin.json`'s `skills` array (the Claude Code plugin ships the whole set). If a beta or retired bucket is ever needed, add it here and exclude it from both.
 

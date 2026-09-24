@@ -1,7 +1,7 @@
 {
   "name": "timothyjoh-skills",
   "version": "0.6.0",
-  "description": "Timothy Johnson's agent skills: turn a YouTube channel or complete playlist into a skill an agent can decide with, explain things with a picture and plain words, and produce audio stories and narrated browser tours.",
+  "description": "Timothy Johnson's agent skills: turn channels and playlists into knowledge, explain ideas visually, produce narrated audio, and delegate work to T3 Code project agents.",
   "author": {
     "name": "Timothy Johnson",
     "url": "https://github.com/timothyjoh"
@@ -20,7 +20,10 @@
     "jira",
     "media",
     "browser-tour",
-    "tts-voice"
+    "tts-voice",
+    "development",
+    "t3-code",
+    "delegate-t3-agent"
   ],
   "skills": [
     "./skills/knowledge/channel-to-skill",
@@ -31,6 +34,7 @@
     "./skills/writing/jira-writing",
     "./skills/media/storytime",
     "./skills/media/browser-tour",
-    "./skills/media/tts-voice"
+    "./skills/media/tts-voice",
+    "./skills/development/delegate-t3-agent"
   ]
 }

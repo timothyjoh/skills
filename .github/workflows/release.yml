@@ -21,10 +21,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Test T3 delegation
+        run: npm run test:delegate-t3
 
       - name: Create Version Pull Request
         uses: changesets/action@v1

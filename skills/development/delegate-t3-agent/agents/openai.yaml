@@ -1,0 +1,6 @@
+interface:
+  display_name: "Delegate T3 Agent"
+  short_description: "Route local T3 work and collect agent replies"
+  default_prompt: "Use $delegate-t3-agent to select a local project, delegate this task, and bring back the result."
+policy:
+  allow_implicit_invocation: true
