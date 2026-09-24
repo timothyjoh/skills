@@ -1,5 +1,11 @@
 # timothyjoh-skills
 
+## 0.7.0
+
+### Minor Changes
+
+- [`4020b5c`](https://github.com/timothyjoh/skills/commit/4020b5c802b3e5732aa1463b01ee5c338b082612) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Add delegate-t3-agent with bundled helpers and tests for T3 Code project discovery, task dispatch, replies and parent callbacks. Use each installation's project and model defaults, accept credentials through the environment, and keep delegation state outside the installed skill folder.
+
 ## 0.6.0
 
 ### Minor Changes
