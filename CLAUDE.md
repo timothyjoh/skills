@@ -21,6 +21,8 @@ Skills that ship scripts keep them inside the skill folder (`scripts/`, `workflo
 
 To (re)link every skill into the local harness skill directories (`~/.claude/skills`, `~/.agents/skills`), run `scripts/link-skills.sh`. Each entry is a symlink into this repo, so a `git pull` keeps installed skills current; re-run the script after adding, removing, or renaming a skill.
 
+`~/.agents/skills` is the installed source of truth for Tim's global skills (decision 2026-09-24, `~/wrk/aos/decisions/log.md`). Skills from this repo are symlinks there that point back here, so edit them in this repo. Every `~/.claude/skills` entry must be a symlink. Never make a real-directory copy of a skill, in `~/.claude/skills`, another repo, or under a new name.
+
 Releases use changesets: add one under `.changeset/` with every user-visible change; the release workflow opens a version PR, and `npm run version` keeps `.claude-plugin/plugin.json`'s version in sync with `package.json`.
 
 A skill written by someone else carries an `origin` block under `metadata` in its `SKILL.md` frontmatter with two keys: `author` and `url` (the post or repository it came from, whichever is the better pointer). The README and docs entries name the author too. This is the credit; it does not change who maintains the copy here.

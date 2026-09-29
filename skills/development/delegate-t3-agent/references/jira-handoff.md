@@ -21,7 +21,9 @@ Proposed fix: recommended change and rejected alternatives with reasons.
 Branch: actual destination instructions and required base.
 Acceptance: observable expected behavior and relevant test commands.
 Scope: implementation and requested PR work; state exclusions.
-Return: changed files, test outcomes, branch/PR URL if requested, residual risks and questions.
+Done when: the acceptance test commands pass.
+Stop: ask only if blocked on a decision, or before merge, deploy, force push or data deletion.
+Return: three headings. Blocked on me: open questions. Changed: files, branch/PR URL if requested. Found: test output lines, residual risks.
 ```
 
 Use source content for each field. Omit inapplicable fields rather than inventing values.

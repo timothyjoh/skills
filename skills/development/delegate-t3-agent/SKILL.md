@@ -22,7 +22,15 @@ Use `scripts/t3.mjs` from this skill folder. Resolve its absolute path from the 
 
 ## Start the session
 
-Write the complete task prompt to a local file. Include the objective, source links, verified findings, affected repository, branch rules, completion criteria, exclusions, and what the child must report. Keep personnel or personal context out of unrelated handoffs.
+Write the complete task prompt to a local file. Include the objective, source links, verified findings, affected repository, branch rules, and exclusions. End it with this run contract, filled in. T3 children often run Codex, which does not load the caller's `~/.claude/CLAUDE.md`, so the prompt file is the only carrier for these rules.
+
+```text
+Done when: <runnable check and expected result, e.g. "`npm test` passes">
+Stop and ask only if: <blocked on a decision, or other conditions>. Never merge, deploy, force push or delete data without asking.
+Report with: Blocked on me (open questions) / Changed (files, branch, PR URL) / Found (test output lines, residual risks).
+```
+
+Keep personnel or personal context out of unrelated handoffs.
 
 ```sh
 node <skill>/scripts/t3.mjs start \
