@@ -46,7 +46,7 @@ Keep the returned delegation ID, T3 thread ID and URL. Reuse the same key and id
 
 Use the destination project's configured provider and model unless the user requests an override. `models` reports live choices; `--provider`, `--model`, and `--effort` select explicit overrides for any task kind. Unknown or unavailable choices fail instead of silently falling back. If the project has no default provider, select one from `models` based on the user's request or ask a targeted question.
 
-New sessions default to `approval-required`. Use `--runtime-mode full-access` when the user authorizes that execution mode. The launch result reports `runtimeMode`. Follow-ups use the child's current T3 mode, and callbacks preserve the parent's mode. Replaying a request key preserves its recorded launch settings.
+New sessions default to T3 `auto` mode: the provider approves routine actions and asks the user for the rest. Use `--runtime-mode approval-required` when the user asks to approve every action, `auto-accept-edits` to approve only file edits, and `full-access` only when the user authorizes that execution mode. The launch result reports `runtimeMode`. Follow-ups use the child's current T3 mode, and callbacks preserve the parent's mode. Replaying a request key preserves its recorded launch settings.
 
 The helper uses the existing checkout. The child follows the destination's branch instructions and the delegated task's authorization. Replaying an old request key preserves that session's recorded mode; change an existing session's mode in T3 if needed.
 

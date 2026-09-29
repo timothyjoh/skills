@@ -7,6 +7,7 @@ import { projects, selectProject } from './catalog.mjs';
 import { chooseModel, models } from './runtime.mjs';
 
 export const kinds=['research','planning','implementation','review','research-review','coordination'];
+export const runtimeModes=['auto','auto-accept-edits','approval-required','full-access'];
 const canonical=x=>JSON.stringify(x, Object.keys(x).sort());
 const digest=x=>createHash('sha256').update(canonical(x)).digest('hex');
 const stamp=()=>({commandId:randomUUID(),createdAt:new Date().toISOString()});
@@ -46,8 +47,8 @@ function prefix(kind) {
 export async function start(runtime,ledger,spec) {
   if(!kinds.includes(spec.kind)) throw Error(`Invalid kind. Choose ${kinds.join(', ')}.`);
   if(!spec.key || !spec.prompt?.trim()) throw Error('A stable --key and nonempty --prompt-file are required.');
-  const runtimeMode=spec.runtimeMode??'approval-required';
-  if(!['full-access','approval-required'].includes(runtimeMode)) throw Error('runtime mode must be full-access or approval-required.');
+  const runtimeMode=spec.runtimeMode??'auto';
+  if(!runtimeModes.includes(runtimeMode)) throw Error(`runtime mode must be one of ${runtimeModes.join(', ')}.`);
   const fingerprint=digest(spec);
   let task=ledger.byKey(spec.key);
   if(task && task.fingerprint!==fingerprint) throw Error('Idempotency key already belongs to a different request.');

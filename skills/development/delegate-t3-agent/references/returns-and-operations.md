@@ -20,7 +20,16 @@ Keep shell tracing off for credential setup. If `t3` is not on PATH, use the exe
 
 State lives at `~/.local/state/t3-delegations/<hash-of-T3-home>/`. `T3_DELEGATE_STATE` changes the parent directory. Request prompts, command receipts, result JSON and watcher logs are local files. The helper requests owner-only POSIX permissions; on Windows, use a state directory protected by the user's account permissions. State stays outside the skill, so a copied or read-only plugin installation works.
 
-New sessions default to `approval-required`. Use `start --runtime-mode full-access` when authorized. Follow-ups use the current T3 mode, including changes made in T3. Saved requests retain their original launch mode when retried.
+New sessions default to `auto`. `start --runtime-mode` accepts the four T3 modes:
+
+| Mode | Claude Code child | Codex child |
+|---|---|---|
+| `auto` (default) | permission mode `auto` | `on-request` approvals, `workspace-write` sandbox, automatic approval reviewer |
+| `auto-accept-edits` | permission mode `acceptEdits` | `on-request` approvals, `workspace-write` sandbox, user reviews |
+| `approval-required` | default permission prompts | `untrusted` approvals, `read-only` sandbox |
+| `full-access` | `bypassPermissions`; use only when authorized | `never` approvals, `danger-full-access` sandbox |
+
+This mapping was read from T3 Code 0.0.39; confirm it after a T3 upgrade. In `auto`, an action the provider does not approve still stops the child with `needs_approval`. Follow-ups use the current T3 mode, including changes made in T3. Saved requests retain their original launch mode when retried.
 
 ## External parent
 

@@ -39,7 +39,7 @@ test('ambiguous project names never choose first candidate',()=>{
 test('launch retries retain one thread, one message and the original commands',async t=>{
  const f=fixture(t);const a=await start(f.runtime,f.ledger,spec),b=await start(f.runtime,f.ledger,spec);
  assert.equal(a.id,b.id);assert.equal(f.effects.length,2);assert.equal(f.effects[1].threadId,a.threadId);
- assert.equal(f.effects[0].runtimeMode,'approval-required');assert.equal(f.effects[1].runtimeMode,'approval-required');assert.equal(a.runtimeMode,'approval-required');
+ assert.equal(f.effects[0].runtimeMode,'auto');assert.equal(f.effects[1].runtimeMode,'auto');assert.equal(a.runtimeMode,'auto');
  await assert.rejects(start(f.runtime,f.ledger,{...spec,prompt:'different'}),/different request/);
 });
 test('ambiguous dispatch response reuses persisted IDs after failure',async t=>{
@@ -127,7 +127,7 @@ test('an uncertain follow-up retry advances the observed prompt and does not sen
  await reply(f.runtime,f.ledger,child.id,input);
  assert.notEqual(f.ledger.get(child.id).launch.message.messageId,first.message.messageId);
  assert.equal(f.effects.filter(c=>c.type==='thread.turn.start').length,2);
- assert.equal(f.effects.at(-1).runtimeMode,'approval-required');
+ assert.equal(f.effects.at(-1).runtimeMode,'auto');
  await assert.rejects(reply(f.runtime,f.ledger,child.id,{...input,text:'Different second request'}),/different content/);
 });
 test('question answers preserve the provider request and question IDs',async t=>{
@@ -149,6 +149,13 @@ test('explicit supervised launch and follow-up retain approval-required mode',as
  await reply(f.runtime,f.ledger,child.id,{key:'follow-up',text:'Continue'});
  assert.equal(f.effects.at(-1).runtimeMode,'approval-required');
  await assert.rejects(start(f.runtime,f.ledger,{...input,runtimeMode:'full-access'}),/different request/);
+});
+test('every T3 runtime mode is accepted and sent on create and launch',async t=>{
+ for(const runtimeMode of ['auto','auto-accept-edits','approval-required','full-access']) {
+  const f=fixture(t),child=await start(f.runtime,f.ledger,{...spec,key:`mode-${runtimeMode}`,runtimeMode});
+  assert.equal(child.runtimeMode,runtimeMode);
+  assert.ok(f.effects.every(c=>c.runtimeMode===runtimeMode));
+ }
 });
 test('invalid runtime mode cannot dispatch or persist a task',async t=>{
  const f=fixture(t);
