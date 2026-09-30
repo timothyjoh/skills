@@ -1,5 +1,17 @@
 # timothyjoh-skills
 
+## 0.8.0
+
+### Minor Changes
+
+- [`e014501`](https://github.com/timothyjoh/skills/commit/e0145012fce2b464cef8c7db67f398aecc9eb5b6) Thanks [@timothyjoh](https://github.com/timothyjoh)! - delegate-t3-agent: start new T3 sessions in `auto` mode by default, and accept all four T3 runtime modes (`auto`, `auto-accept-edits`, `approval-required`, `full-access`). Saved request keys keep the mode they were launched with.
+
+- [`117b6f5`](https://github.com/timothyjoh/skills/commit/117b6f5b313cfe15a0e838d8c27ee286cb61a6b9) Thanks [@timothyjoh](https://github.com/timothyjoh)! - explain-pr: new development skill. It explains a PR or commit range as a staff-engineer brief, rendered as an HTML page or a GitHub PR comment. Every code link, peek and call-stack frame is checked against the pinned commits. Briefs go under `$EXPLAIN_PR_DIR` (default `~/reviews`).
+
+### Patch Changes
+
+- [`ade4fca`](https://github.com/timothyjoh/skills/commit/ade4fcaa5ab1f1df5929d3e480029560805e8687) Thanks [@timothyjoh](https://github.com/timothyjoh)! - delegate-t3-agent: end every handoff prompt with a run contract (Done when / Stop and ask only if / Report with), because Codex children do not load the caller's CLAUDE.md. The Jira handoff template uses the same contract.
+
 ## 0.7.0
 
 ### Minor Changes
