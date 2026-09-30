@@ -13,7 +13,8 @@
     "version": "changeset version && node scripts/sync-plugin-version.mjs",
     "check-plugin-version": "node scripts/sync-plugin-version.mjs --check",
     "validate": "claude plugin validate . --strict",
-    "test:delegate-t3": "node --test skills/development/delegate-t3-agent/scripts/tests/*.test.mjs"
+    "test:delegate-t3": "node --test skills/development/delegate-t3-agent/scripts/tests/*.test.mjs",
+    "test:explain-pr": "node --test skills/development/explain-pr/scripts/tests/*.test.mjs"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.7.0",

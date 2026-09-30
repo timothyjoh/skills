@@ -56,7 +56,7 @@ It writes the skills into your repo as ordinary files you own and can edit. Pull
 The skills shell out to a few tools; each `SKILL.md` names what it needs under Prerequisites. Across the set:
 
 - [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) on `PATH` (`brew install yt-dlp`). No YouTube API key.
-- Node 18 or newer for most bundled scripts; `delegate-t3-agent` needs Node 24 or newer and a running T3 Code installation.
+- Node 18 or newer for most bundled scripts; `delegate-t3-agent` needs Node 24 or newer and a running T3 Code installation; `explain-pr` needs Node 24 or newer, `git` and `gh`.
 - `ffmpeg` and `python3` for the media skills. `tts-voice` needs a local Chatterbox install; `browser-tour` needs the Claude-in-Chrome extension.
 
 ## Reference
@@ -96,11 +96,12 @@ Producing audio and narrated walkthroughs.
 
 ### Development
 
-Delegating work to project agents and collecting their results.
+Delegating work to project agents and collecting their results, and explaining and reviewing code changes.
 
 **Model-invoked**
 
 - **[delegate-t3-agent](./skills/development/delegate-t3-agent/SKILL.md)**: Start a T3 Code session in a registered project, collect its reply, and continue the task. Includes project discovery, retry records and optional parent callbacks. Docs: [delegate-t3-agent](./docs/development/delegate-t3-agent.md).
+- **[explain-pr](./skills/development/explain-pr/SKILL.md)**: Explain a PR or commit range as a staff-engineer brief: changes grouped by purpose, one design diagram, and code links, peeks and call stacks checked against the pinned commits. Renders an HTML page or a GitHub PR comment. Prompts adapted from [devdotfast/whiteboard](https://github.com/devdotfast/whiteboard) (MIT). Docs: [explain-pr](./docs/development/explain-pr.md).
 
 ## Developing
 

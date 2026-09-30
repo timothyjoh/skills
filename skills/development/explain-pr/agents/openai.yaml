@@ -1,0 +1,6 @@
+interface:
+  display_name: "Explain PR"
+  short_description: "Brief a PR or commit range for a staff engineer"
+  default_prompt: "Use $explain-pr to explain this PR as a checked brief grouped by purpose."
+policy:
+  allow_implicit_invocation: true
