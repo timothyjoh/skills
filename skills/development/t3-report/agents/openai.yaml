@@ -1,0 +1,6 @@
+interface:
+  display_name: "T3 Report"
+  short_description: "Send progress reports from a delegated T3 session"
+  default_prompt: "Use $t3-report to report progress to the coordinator that delegated this task."
+policy:
+  allow_implicit_invocation: true

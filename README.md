@@ -56,7 +56,7 @@ It writes the skills into your repo as ordinary files you own and can edit. Pull
 The skills shell out to a few tools; each `SKILL.md` names what it needs under Prerequisites. Across the set:
 
 - [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) on `PATH` (`brew install yt-dlp`). No YouTube API key.
-- Node 18 or newer for most bundled scripts; `delegate-t3-agent` needs Node 24 or newer and a running T3 Code installation; `explain-pr` needs Node 24 or newer, `git` and `gh`.
+- Node 18 or newer for most bundled scripts; `t3-handoff` needs Node 24 or newer and a running T3 Code installation (0.0.45 or 0.0.46 and later); `explain-pr` needs Node 24 or newer, `git` and `gh`.
 - `ffmpeg` and `python3` for the media skills. `tts-voice` needs a local Chatterbox install; `browser-tour` needs the Claude-in-Chrome extension.
 
 ## Reference
@@ -100,7 +100,8 @@ Delegating work to project agents and collecting their results, and explaining a
 
 **Model-invoked**
 
-- **[delegate-t3-agent](./skills/development/delegate-t3-agent/SKILL.md)**: Start a T3 Code session in a registered project, collect its reply, and continue the task. Includes project discovery, retry records and optional parent callbacks. Docs: [delegate-t3-agent](./docs/development/delegate-t3-agent.md).
+- **[t3-handoff](./skills/development/t3-handoff/SKILL.md)**: Hand off a task to a T3 Code session in a registered project, follow its progress reports, and collect its result. Names each session `👋 <task>`, works with T3's protocol 1 and 2, and can post progress into a parent T3 conversation. Docs: [t3-handoff](./docs/development/t3-handoff.md).
+- **[t3-report](./skills/development/t3-report/SKILL.md)**: Used by the delegated agent: send short progress reports to the coordinator at agreed points, following the coordinator's reporting brief. Docs: [t3-report](./docs/development/t3-report.md).
 - **[explain-pr](./skills/development/explain-pr/SKILL.md)**: Explain a PR or commit range as a staff-engineer brief: changes grouped by purpose, one design diagram, and code links, peeks and call stacks checked against the pinned commits. Renders an HTML page or a GitHub PR comment. Prompts adapted from [devdotfast/whiteboard](https://github.com/devdotfast/whiteboard) (MIT). Docs: [explain-pr](./docs/development/explain-pr.md).
 
 ## Developing
@@ -113,7 +114,7 @@ scripts/list-skills.sh
 npx changeset             # record a user-visible change before a PR
 ```
 
-Conventions live in [CLAUDE.md](./CLAUDE.md).
+Conventions live in [CLAUDE.md](./CLAUDE.md). See [skill quality checks](./.agents/skill-quality.md) and [evaluation cases](./.agents/skill-evaluation.md) when changing skills. Run `npm run test:knowledge` for source-coverage and generated-navigation checks. The [October 2026 audit](./.agents/skill-audit-2026-10-01.md) records the changes and model-test limits.
 
 ## License
 

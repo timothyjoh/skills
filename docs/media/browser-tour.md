@@ -14,6 +14,12 @@ The Claude-in-Chrome extension and its MCP tools. Audio narration is optional an
 
 Every stop ends on its own content, or with an offer to go deeper on it. The next stop is a surprise. In plan and demo modes the spoken narration is written separately from the on-screen text, printed verbatim before it is synthesized, and played back blocking so the pause follows the audio.
 
+## Checks at each stop
+
+The agent checks that the loaded page supports the narration before speaking. A failed load or missing feature leads to corrected navigation or a reported gap. The tour still pauses for your next message after each stop.
+
+Audio uses the sibling `tts-voice` script, or the path in `BROWSER_TOUR_TTS`. Missing audio dependencies need only block narration audio. Playback uses the host's player; `afplay` is the macOS option.
+
 ## It's working if
 
 - Each turn shows one page and ends with the agent waiting.

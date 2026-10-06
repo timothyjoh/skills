@@ -28,8 +28,10 @@ Deliver (hand the MP3 to the user)
 ## Prerequisites
 
 - The `tts-voice` skill installed beside this one, set up per its `SKILL.md`. The render script looks for `../tts-voice/scripts/tts-voice.sh`; override with `STORYTIME_TTS=<path>`.
-- `ffmpeg` and `python3` on `PATH`.
+- `ffmpeg` (including `ffprobe`) and `python3` on `PATH`. Check `ffmpeg -version`, `ffprobe -version`, and `python3 --version`; on macOS, install missing tools with `brew install ffmpeg python`.
 - Synthesis is local and slow on CPU: budget a few seconds per line, or pass `--mps` on Apple Silicon.
+
+Call the Skill tool with `tts-voice` for its setup instructions, or read its installed `SKILL.md` if that tool is absent. Resolve every `scripts/` command below from this skill folder, not the caller's working directory. Use `STORYTIME_TTS` for voice discovery too when it is set.
 
 ## Step 1: Convert story to script
 
@@ -68,6 +70,8 @@ JSON mapping character names to voices. A value is a `tts-voice` voice name (any
 
 Save as a `.cast.json` file. Run `../tts-voice/scripts/tts-voice.sh --list-voices` to see what is available; an unlisted character falls back to the NARRATOR voice.
 
+Before synthesis, check that every speaker tag maps to a listed voice or a readable WAV, or explicitly uses the narrator fallback. Keep casting and pacing flexible; preserve the source wording and tagged-script format.
+
 ## Step 3: Render
 
 ```bash
@@ -83,7 +87,9 @@ The script:
 4. Adds silence between speakers (default 400 ms)
 5. Stitches everything with ffmpeg
 
-## Step 4: Deliver
+## Step 4: Verify and deliver
+
+After rendering, run `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 <output.mp3>` and require a positive duration. When playback is available, listen to the opening and final line for truncation and the intended voices. Split an overlong line or correct the cast, render again, and repeat the failed check. Stop after two unsuccessful repairs with the error and input paths. If playback is unavailable, report that listening was not verified.
 
 Hand the MP3 to the user by whatever the host supports: `SendUserFile` in Claude Code, a file attachment on a chat platform, or the path on disk.
 

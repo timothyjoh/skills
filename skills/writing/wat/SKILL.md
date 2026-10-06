@@ -10,18 +10,20 @@ original question. It is the answer you just gave, explained a second time in a 
 the reader can follow.
 
 Write literally. No analogies, no metaphors, no phrasal verbs, no em dashes. The
-`asd-ste100` skill holds the full rule set.
+`asd-ste100` skill holds the full rule set. Call the Skill tool with `asd-ste100` in STE-flavored mode, or read its installed `SKILL.md` if the tool is absent. Preserve identifiers, numbers, conditions, and genuine uncertainty during that pass.
 
 ## Same answer, explained again
 
 Keep every conclusion, number and caveat from the last output. Change only the form.
+Keep the scope and strength of each claim unchanged, including uncertainty.
+Definitions must not add promises about the system.
 
 The reader already read it once. The same explanation in the same shape will fail a
 second time. Change the form:
 
 - Start with a picture the last output did not have.
 - Name each technical term and define it in the same place.
-- Cut the last output's length by half or more. If it was six paragraphs, this is three.
+- Aim for half the previous length. Keep any extra words needed to preserve conclusions, conditions, numbers, and caveats.
 - Remove the supporting detail and keep the main structure. The reader wants the
   structure, not the evidence.
 
@@ -130,6 +132,8 @@ and open it:
 Bash(open path/to/wat-{topic}.html)
 ```
 
+Use the host's file-opening tool for HTML; `open` above is the macOS option. If browser inspection is available, check the diagram before delivery.
+
 ## Plain words
 
 - Write short sentences. One idea in each sentence.
@@ -191,12 +195,6 @@ verbs, idioms, or metaphors.
 
 ## Shape of the answer
 
-1. One line saying what the thing is.
-2. The picture.
-3. Two to four short paragraphs, each with its own small heading, walking the picture.
-4. One line on what it means for the reader.
+Start with the picture, then explain it in the fewest short paragraphs the reader needs. Use headings only when they help. End with the practical implication when it adds information.
 
-Stop there. A reader who now understands the answer does not want ten more paragraphs.
-
-Write no preamble about re-explaining. Skip "Let me put that another way" and start on
-line 1.
+Before delivery, compare the rewrite with the previous answer: every conclusion, number, condition, and caveat still holds; each technical label is explained beside it. Restore missing substance and recheck after editing. If correcting a real error, label that correction explicitly.

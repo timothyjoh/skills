@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { setImmediate as nextTick } from 'node:timers/promises';
-import { T3Client, T3_METHODS, readSnapshot, projectCreate, researchThreadCreate, researchTurnStart, userInputRespond, extractPendingInputs, pendingInteractions } from '../t3-client.mjs';
+import { T3Client, T3_METHODS, readSnapshot } from '../t3-client.mjs';
+import { pendingInteractions } from '../protocol-v1.mjs';
 
 function fixture(options = {}) {
   const sockets = []; const requests = []; const events = [];
@@ -107,27 +108,24 @@ test('closing during ticket acquisition prevents an unwanted later connection', 
   f.client.close(); release(); await connecting; assert.equal(f.sockets.length, 0);
 });
 
-test('research helpers preserve saved IDs and enforce plan/approval-required in local checkout', () => {
-  const base = { commandId: 'command-1', createdAt: '2026-09-07T12:00:00.000Z', projectId: 'project-1', threadId: 'thread-1', title: 'Research', modelSelection: { instanceId: 'claudeAgent', model: 'sonnet' }, runtimeMode: 'full-access', interactionMode: 'default', worktreePath: '/unsafe' };
-  const project = projectCreate({ ...base, workspaceRoot: '/tmp/repo' });
-  assert.equal(project.createWorkspaceRootIfMissing, false);
-  const thread = researchThreadCreate(base);
-  assert.equal(thread.runtimeMode, 'approval-required'); assert.equal(thread.interactionMode, 'plan');
-  assert.equal(thread.worktreePath, null); assert.equal(thread.branch, null);
-  const turn = researchTurnStart({ ...base, messageId: 'message-1', text: 'Investigate only.' });
-  assert.equal(turn.commandId, 'command-1'); assert.equal(turn.message.messageId, 'message-1');
-  assert.equal(turn.runtimeMode, 'approval-required'); assert.equal(turn.interactionMode, 'plan');
-  assert.deepEqual(turn.message.attachments, []);
-  assert.throws(() => researchThreadCreate({ ...base, modelSelection: undefined }));
-  assert.equal(userInputRespond({ ...base, requestId: 'question-1', answers: { q: 'Answer' } }).type, 'thread.user-input.respond');
+test('protocol query parameters are added to the WebSocket URL before the ticket', async (t) => {
+  const f = fixture({ query: { orchestrationProtocol: 2, clientSurface: 'cli' } }); t.after(() => f.client.close()); await f.client.connect();
+  assert.equal(f.socket.url, 'ws://127.0.0.1:3773/ws?orchestrationProtocol=2&clientSurface=cli&wsTicket=one-time-ticket');
+});
+
+test('a rejected request names the tagged error and a short message only', async (t) => {
+  const f = fixture(); t.after(() => f.client.close()); await f.client.connect();
+  const result = f.client.request('orchestration.dispatchCommand', {});
+  f.socket.receive({ _tag: 'Exit', requestId: '1', exit: { _tag: 'Failure', cause: [{ _tag: 'Fail', error: { _tag: 'OrchestrationV2DispatchCommandError', message: 'Thread not found', detail: { token: 'secret-value' } } }] } });
+  await assert.rejects(result, (e) => e.code === 'RPC_REJECTED' && /OrchestrationV2DispatchCommandError: Thread not found/.test(e.message) && !e.message.includes('secret-value'));
 });
 
 test('pending questions preserve provider question IDs and drop resolved requests independently of approvals', () => {
   const activity = (kind, requestId, payload = {}) => ({ kind, summary: 'Request', createdAt: '2026-09-07T12:00:00.000Z', payload: { requestId, ...payload } });
   const question = { id: 'Which tenant should I research?', question: 'Which tenant should I research?', options: [] };
   const activities = [activity('user-input.requested', 'q1', { questions: [question] }), activity('user-input.requested', 'q2', { questions: [question] }), activity('approval.requested', 'a1'), activity('user-input.resolved', 'q1')];
-  assert.deepEqual(extractPendingInputs(activities).map(x => x.requestId), ['q2']);
-  assert.equal(extractPendingInputs(activities)[0].questions[0].id, question.id);
+  assert.deepEqual(pendingInteractions({ activities }).questions.map(x => x.requestId), ['q2']);
+  assert.equal(pendingInteractions({ activities }).questions[0].questions[0].id, question.id);
   assert.deepEqual(pendingInteractions({ activities }).approvals.map(x => x.requestId), ['a1']);
 });
 

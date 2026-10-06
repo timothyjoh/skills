@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto';
-
 export const T3_METHODS = Object.freeze({
   dispatch: 'orchestration.dispatchCommand',
   shell: 'orchestration.subscribeShell',
@@ -17,9 +15,9 @@ export class T3Client {
   #url; #token; #fetch; #WebSocket; #socket; #connecting; #generation = 0;
   #pending = new Map(); #nextId = 0; #heartbeat; #pong = true; #connectAbort;
   #timeoutMs; #pingIntervalMs; #maxPending; #maxFrameBytes; #queuedBytes = 0;
-  #onEvent; #onDisconnect;
+  #onEvent; #onDisconnect; #query;
 
-  constructor({ url, token, onEvent = () => {}, onDisconnect = () => {}, fetchImpl = globalThis.fetch,
+  constructor({ url, token, query = {}, onEvent = () => {}, onDisconnect = () => {}, fetchImpl = globalThis.fetch,
     WebSocketImpl = globalThis.WebSocket, timeoutMs = 15000,
     pingIntervalMs = 5000, maxPending = 128, maxFrameBytes = 8 * 1024 * 1024 }) {
     const parsed = new URL(url);
@@ -29,7 +27,7 @@ export class T3Client {
     if (typeof fetchImpl !== 'function' || typeof WebSocketImpl !== 'function') throw new T3Error('Node 24 or compatible fetch and WebSocket implementations required', 'CONFIG');
     this.#url = parsed; this.#token = token; this.#fetch = fetchImpl; this.#WebSocket = WebSocketImpl;
     this.#onEvent = onEvent; this.#onDisconnect = onDisconnect; this.#timeoutMs = timeoutMs; this.#pingIntervalMs = pingIntervalMs;
-    this.#maxPending = maxPending; this.#maxFrameBytes = maxFrameBytes;
+    this.#maxPending = maxPending; this.#maxFrameBytes = maxFrameBytes; this.#query = query;
   }
 
   get connected() { return this.#socket?.readyState === 1; }
@@ -68,6 +66,8 @@ export class T3Client {
     const wsUrl = new URL(this.#url);
     wsUrl.protocol = ticketUrl.protocol === 'https:' ? 'wss:' : 'ws:';
     if (wsUrl.pathname === '/') wsUrl.pathname = '/ws';
+    // V2 servers refuse /ws with HTTP 426 unless orchestrationProtocol=2 is in the query.
+    for (const [key, value] of Object.entries(this.#query)) wsUrl.searchParams.set(key, String(value));
     wsUrl.searchParams.set('wsTicket', ticket);
     let socket;
     try { socket = new this.#WebSocket(wsUrl.toString()); }
@@ -168,8 +168,12 @@ export class T3Client {
         pending.resolve?.(frame.exit.value);
         if (pending.onValue) this.#notify({ type: 'subscription-ended', method: pending.method });
       } else {
-        // Do not copy arbitrary provider errors into logs; they can contain secrets.
-        this.#reject(pending, new T3Error(`T3 rejected ${pending.method}`, 'RPC_REJECTED'));
+        // Name typed server errors (tagged, such as OrchestrationV2DispatchCommandError) with a
+        // short message. Untagged provider errors stay hidden; they can contain secrets.
+        const failure = frame.exit?.cause?.find?.(c => c?._tag === 'Fail')?.error;
+        const tagged = failure && typeof failure === 'object' && typeof failure._tag === 'string';
+        const detail = tagged ? [failure._tag, typeof failure.message === 'string' ? failure.message.slice(0, 300) : ''].filter(Boolean).join(': ') : '';
+        this.#reject(pending, new T3Error(`T3 rejected ${pending.method}${detail ? ` (${detail})` : ''}`, 'RPC_REJECTED'));
       }
     } else throw new Error('Unknown response envelope');
   }
@@ -209,41 +213,6 @@ const required = (value, name) => {
   if (typeof value !== 'string' || !value.trim()) throw new TypeError(`${name} is required`);
   return value;
 };
-const stamp = ({ commandId = randomUUID(), createdAt = new Date().toISOString() }) => ({ commandId, createdAt });
-const selection = (value) => {
-  required(value?.instanceId, 'modelSelection.instanceId'); required(value?.model, 'modelSelection.model');
-  return { ...value };
-};
-
-// Persist these complete commands BEFORE dispatch. Reuse commandId on an ambiguous
-// retry; a new commandId can launch duplicate work. These helpers never dispatch.
-export function projectCreate(input) {
-  return { type: 'project.create', ...stamp(input), projectId: required(input.projectId, 'projectId'),
-    title: required(input.title, 'title'), workspaceRoot: required(input.workspaceRoot, 'workspaceRoot'),
-    createWorkspaceRootIfMissing: false };
-}
-export function researchThreadCreate(input) {
-  return { type: 'thread.create', ...stamp(input), threadId: required(input.threadId, 'threadId'),
-    projectId: required(input.projectId, 'projectId'), title: required(input.title, 'title'),
-    modelSelection: selection(input.modelSelection), runtimeMode: 'approval-required', interactionMode: 'plan',
-    branch: null, worktreePath: null };
-}
-export function researchTurnStart(input) {
-  return { type: 'thread.turn.start', ...stamp(input), threadId: required(input.threadId, 'threadId'),
-    message: { messageId: input.messageId ?? randomUUID(), role: 'user', text: required(input.text, 'text'), attachments: input.attachments ?? [] },
-    ...(input.modelSelection ? { modelSelection: selection(input.modelSelection) } : {}),
-    runtimeMode: 'approval-required', interactionMode: 'plan' };
-}
-export function userInputRespond(input) {
-  if (!input.answers || typeof input.answers !== 'object' || Array.isArray(input.answers)) throw new TypeError('answers must be an object keyed by question ID');
-  return { type: 'thread.user-input.respond', ...stamp(input), threadId: required(input.threadId, 'threadId'),
-    requestId: required(input.requestId, 'requestId'), answers: input.answers };
-}
-export function interruptTurn(input) {
-  return { type: 'thread.turn.interrupt', ...stamp(input), threadId: required(input.threadId, 'threadId'),
-    ...(input.turnId ? { turnId: input.turnId } : {}) };
-}
-
 export function readSnapshot(client, method = T3_METHODS.shell, payload = {}, { timeoutMs = 15000 } = {}) {
   return new Promise((resolve, reject) => {
     let unsubscribe;
@@ -255,23 +224,4 @@ export function readSnapshot(client, method = T3_METHODS.shell, payload = {}, { 
       }, { timeoutMs, onError: (error) => { clearTimeout(timer); reject(error); } });
     } catch (error) { clearTimeout(timer); reject(error); }
   });
-}
-
-// These are candidate requests from the snapshot's retained activities. Use the
-// fresh shell pending flags too; a provider restart can make old requests stale.
-export function pendingInteractions(thread) {
-  const questions = new Map(); const approvals = new Map();
-  for (const activity of thread.activities ?? []) {
-    const payload = activity.payload;
-    if (!payload || typeof payload.requestId !== 'string') continue;
-    if (activity.kind === 'user-input.requested') questions.set(payload.requestId, { ...payload, summary: activity.summary, createdAt: activity.createdAt });
-    if (activity.kind === 'user-input.resolved') questions.delete(payload.requestId);
-    if (activity.kind === 'approval.requested') approvals.set(payload.requestId, { ...payload, summary: activity.summary, createdAt: activity.createdAt });
-    if (activity.kind === 'approval.resolved') approvals.delete(payload.requestId);
-  }
-  return { questions: [...questions.values()], approvals: [...approvals.values()] };
-}
-
-export function extractPendingInputs(activities) {
-  return pendingInteractions({ activities }).questions;
 }

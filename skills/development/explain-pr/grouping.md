@@ -10,7 +10,7 @@ You are grouping the changed files of one code change so a staff engineer can re
 2. Set aside non-implementation files first, one group per kind: all tests together, all docs together, and so on for config and build, generated files and lockfiles, fixtures and snapshots, pure renames, and formatting-only changes.
 3. Split the remaining implementation files by the part of the design each one serves (the data model, an API, a UI surface, a background job). Order the groups so each one only depends on groups before it: contracts and data model first, then the code behind them, then the surfaces that call it. Inside a group, list files in the same order, starting with the entry point. Keep each group small enough to read in one sitting. Keep a file whole unless it holds two unrelated changes, and even then pick the group of its main change.
 4. Look for **moves**. A block deleted from one file and a similar block added to another (similar line counts, similar names) is a move. Put both files in the same group and name the move in the summary. A move between test files stays in the tests group.
-5. Write `<dir>/groups.json`.
+5. Write `<dir>/groups.json`. Call the Skill tool with `asd-ste100` in **STE-flavored** mode on the group titles and summaries. If the harness has no Skill tool, read the installed skill's `SKILL.md` and follow it. Preserve facts, conditions, uncertainty, code identifiers and link targets. Keep the JSON structure and file paths unchanged. Use no em dashes.
 6. Run `node <script> check <dir> --only groups`. Fix and rerun until it prints `ok`.
 
 Done when the check prints `ok`: every changed file sits in exactly one group.

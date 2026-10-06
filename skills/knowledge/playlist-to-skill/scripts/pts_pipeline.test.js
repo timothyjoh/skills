@@ -96,7 +96,7 @@ test('validator blocks missing extractions and accounts for every source in mani
   assert.equal(run('pts_enumerate.js', [playlist.url, '--kb-dir', kb]).status, 0);
   assert.equal(run('pts_fetch.js', ['--kb-dir', kb, '--delay', '0']).status, 0);
   const out = path.join(dir, 'skill'); fs.mkdirSync(out);
-  fs.writeFileSync(path.join(out, 'SKILL.md'), '---\nname: fixture\ndescription: Fixture\n---\n# Fixture\n');
+  fs.writeFileSync(path.join(out, 'SKILL.md'), '---\nname: fixture\ndescription: Fixture\n---\n# Fixture\n[Glossary](glossary.md) [Patterns](patterns.md) [Cheatsheet](cheatsheet.md) [Sources](sources.md)\n');
   for (const f of ['glossary', 'patterns', 'cheatsheet', 'sources']) fs.writeFileSync(path.join(out, `${f}.md`), '# Fixture\n');
   fs.writeFileSync(path.join(kb, 'taxonomy.json'), JSON.stringify({ concepts: [] }));
   const args = ['--kb-dir', kb, '--skill-dir', out, '--write-manifest'];

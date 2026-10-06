@@ -47,6 +47,12 @@ Yes. Say so when the run announces the name, before the workflow starts. The nam
 **Can I add a video that is not in the playlist?**
 Yes. When the playlist belongs to someone else, or a related video lives outside it, ask for those videos to be added and give their URLs or IDs. They join the scope as manual additions, get processed in a fold-in run, and stay in the skill across later reruns. The playlist itself is never pruned.
 
+## Validation and navigation
+
+The agent tracks scope, extraction, rendering, and validation separately. It reruns failed checks after targeted repairs and reports any unresolved failure with the saved paths. Generated reference pages over 100 lines have a contents list covering their main sections. Every concept and support page is linked directly from the generated `SKILL.md`.
+
+The tool versions are checked before enumeration. The host's Workflow tool runs the bundled pipeline when available; other hosts execute the same phases with their available tools. The workflow file itself is not a standalone Node script.
+
 ## It's working if
 
 - A watch URL with a playlist parameter processes the entire playlist, regardless of its starting index.

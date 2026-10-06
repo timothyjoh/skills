@@ -8,7 +8,7 @@ Type `/tts-voice`, or the agent reaches for it when you want narration audio, a 
 
 ## Prerequisites
 
-A checkout with `generate.py` and a Python 3.11 venv holding `chatterbox-tts`, pointed at by `CHATTERBOX_REPO`, and a folder of reference WAVs pointed at by `CHATTERBOX_VOICES_DIR`. Reference voices are not shipped; `--voice default` works with none present, and `--ref` takes an ad-hoc WAV. `ffmpeg` for mp3 output. The first run downloads a few gigabytes of model weights.
+A checkout with `generate.py` and a Python 3.11 venv holding `chatterbox-tts`, pointed at by `CHATTERBOX_REPO`, and a folder of reference WAVs pointed at by `CHATTERBOX_VOICES_DIR`. Reference voices are not shipped; `--voice default` works with none present, and `--ref` takes an ad-hoc WAV. `ffmpeg` for mp3 output. The first uncached run downloads a few gigabytes of model weights. The local `generate.py` adapter must accept text, `--device`, `--out`, and optional `--ref`; a plain upstream checkout may not include that adapter. The skill checks both the adapter and its Python environment before synthesis and includes environment setup commands.
 
 ## Common questions
 
@@ -17,6 +17,10 @@ The watermarking dependency needs `pkg_resources`, which setuptools 81 and later
 
 **Why is it slow?**
 Synthesis runs on CPU by default. Pass `--mps` on Apple Silicon, and keep each call to a few sentences.
+
+## Check the result
+
+The agent checks the output file and audio duration. When playback is available, it checks that the final requested sentence is present. Truncated text is split into shorter calls; a missing dependency is corrected before retrying. Unverified playback is stated in the result.
 
 ## It's working if
 

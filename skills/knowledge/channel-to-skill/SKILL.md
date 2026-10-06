@@ -15,6 +15,20 @@ Steps 1 to 3 are interactive: the only decision a human must make is *which vide
 
 `--dry-run` runs Steps 1 to 3 in full (they cost no LLM tokens beyond one triage agent), writes `scope.json`, then prints the estimate and the exact Workflow call Step 4 would make, and stops. Nothing is fetched and nothing is generated. Re-run without the flag to build; the scope file is reused, so the question is not asked twice unless the user wants to change it.
 
+## Prerequisites
+
+Check `node --version` (18 or newer) and `yt-dlp --version` before enumerating. On macOS, missing tools can be installed with `brew install node yt-dlp`; elsewhere use the tools' documented installers. The scripts use Node built-ins and need no npm packages or YouTube API key.
+
+The bundled [workflow](workflow/channel-to-skill.js) needs a host `Workflow` tool with `agent`, `parallel`, `phase`, and `log` globals. If it is unavailable, read that file and execute its phases with available tools, sequentially when agents are unavailable. It is not an ordinary Node program.
+
+Track these milestones in the host's plan or a short progress checklist. Mark a milestone complete only after its checks pass:
+
+- [ ] Tools and channel identified; catalog enumerated.
+- [ ] User-selected scope saved with the processing estimate.
+- [ ] Transcripts fetched and extractions accounted for.
+- [ ] Taxonomy, concept pages, and support files rendered.
+- [ ] Validation passes; coverage and output paths reported.
+
 ## Where things go
 
 The rule: **generated skills land in the same skills root this skill lives in.** Resolve paths once and reuse them.
@@ -25,7 +39,7 @@ SKILLS_ROOT=$(dirname "$SKILL_DIR")     # e.g. .claude/skills or ~/.claude/skill
 ROOT=$(dirname "$SKILLS_ROOT")          # e.g. .claude or ~/.claude
 SCRIPTS="$SKILL_DIR/scripts"
 WORKFLOW="$SKILL_DIR/workflow/channel-to-skill.js"
-NODE=$(command -v node || echo ~/.nvm/versions/node/*/bin/node)
+NODE=$(command -v node)
 ```
 
 If `SKILLS_ROOT` is not writable, or sits inside a plugin cache (the path contains `/plugins/`), the skill was installed as a managed plugin. Use the project's `.claude/skills` as `SKILLS_ROOT` instead and say so.
@@ -121,6 +135,8 @@ git status --porcelain | grep -vE "$SKILLS_ROOT/$SLUG/|$ROOT/kb/$SLUG/"
 
 Expect **0 errors** from the validator and **nothing** from the grep (agents write only under the two directories). Read the validator's size line: `SKILL.md` must be near or under 4k tokens, because it is the only file loaded at work time. Open `cheatsheet.md` and two concept pages and check they read as *decisions* ("Use X when Y"), not as video recaps. If they recap, that is a prompt problem worth fixing in the workflow, not a page to patch.
 
+After a repair, rerun the validator and the affected content checks. Keep the verification milestone open until they pass. If the same failure persists after two targeted repairs, report the failing check and saved paths instead of repeating the whole workflow. Generated reference pages over 100 lines need a contents list near the top that matches their headings; every concept and support page must be linked directly from `SKILL.md`.
+
 The workflow result reports `skipped_videos` (entertainment) and any failed extract batches. A failed batch is retried by simply re-running Step 4: fetch and extraction are both idempotent.
 
 ## Step 6: Commit and report
@@ -147,5 +163,4 @@ Re-run `/channel-to-skill @Handle` later. When `scope.json` exists:
 - Shorts fetch like any other video (`watch?v=<id>` works for them) and carry auto-captions on a talking-head clip. A Shorts tab that is mostly music beds or on-screen text will come back `no-captions`; the one-third rule below applies to the scope as a whole.
 - A channel with mostly-missing captions is not worth a skill. `cts_fetch.js` reports `no-captions` per video; if that is more than a third of the scope, stop and say so.
 - Never parallelize fetching. One IP, one yt-dlp process: parallel requests get rate-limited and the run halts.
-- Requires `yt-dlp` on PATH (`brew install yt-dlp`) and Node 18 or newer. No API key.
 - The generated skill is derived from someone else's material. If it is ever published, keep it private unless the user holds the rights.

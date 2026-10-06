@@ -1,0 +1,133 @@
+{
+  "date": "2026-10-01",
+  "case": ".agents/skill-evaluation.md#reproducible-wat-smoke-case",
+  "baseline_commit": "bdf22d9ff970d7bb0836d07446fa77064f51067e",
+  "revised_wat_sha256": "0939bd55950dd222a7975fd46fcfacfb63cab5b9507edcfa70996e199b9760b1",
+  "host": "Claude Code 2.1.287, safe mode, tools disabled, low effort, no persisted session",
+  "recorded_cost_usd": 0.400093,
+  "timeout_cost": "Not returned; each request was capped at USD 0.30.",
+  "runs": [
+    {
+      "attempt": "first",
+      "requested_model": "haiku",
+      "variant": "baseline",
+      "cap_usd": 0.3,
+      "timeout_seconds": 55,
+      "status": "completed",
+      "model_usage_ids": [
+        "claude-haiku-4-5-20251001"
+      ],
+      "cost_usd": 0.03531,
+      "output": "A migration that copies data and deletes the source only after you fix problems.\n\n```\n1. Run migration: 240 records copy to new table\n   Problem: 3 records copy incorrectly\n2. Repair the 3 broken records\n3. Run cleanup: original table is permanently deleted\n```\n\n**What the steps do**\nMigration copies all 240 records from the original table into a new table. The original table is not touched. Three of the copied records fail their validation check.\n\n**What you must do**\nRepair the 3 broken records in the new table. Do not run cleanup until all 240 records are valid.\n\n**What cleanup does**\nCleanup deletes the original table permanently. Once deleted, it cannot be recovered.\n\n**The unknown**\nWe have tested this migration only on staging. Production behavior is not verified.\n\nWhat you need to know: The 3 broken records must be fixed before cleanup. Cleanup is permanent.",
+      "words": 146
+    },
+    {
+      "attempt": "first",
+      "requested_model": "haiku",
+      "variant": "revised",
+      "cap_usd": 0.3,
+      "timeout_seconds": 55,
+      "status": "timeout",
+      "cost_usd": null
+    },
+    {
+      "attempt": "first",
+      "requested_model": "sonnet",
+      "variant": "baseline",
+      "cap_usd": 0.3,
+      "timeout_seconds": 55,
+      "status": "completed",
+      "model_usage_ids": [
+        "claude-haiku-4-5-20251001",
+        "claude-sonnet-5-5"
+      ],
+      "cost_usd": 0.043141,
+      "output": "The migration copies records from the old table to a new table. It does not delete the old table until you run cleanup.\n\n```text\nold table (240 records)\n   |\n   | migration copies records\n   v\nnew table (237 records copied correctly, 3 failed validation)\n   |\n   | you repair the 3 failed records\n   v\ncleanup  <- permanently deletes the old table\n```\n\n**What the migration does**\nThe migration copies 240 records. It keeps the old table as it is. You can still read the old table after the migration.\n\n**What failed**\n3 of the 240 records failed validation. Validation is the check that tests if a record has correct data. You must repair these 3 records before you run cleanup.\n\n**What cleanup does**\nCleanup deletes the old table permanently. You cannot undo this. Run it only after the 3 records are repaired.\n\n**What is not verified**\nThe migration ran on staging only. Staging is the test copy of the system. I do not know how the migration behaves in production. I have no test result for production.\n\n**What this means for you:** Repair the 3 failed records first. Run cleanup after that. Treat the production run as untested.",
+      "words": 196
+    },
+    {
+      "attempt": "first",
+      "requested_model": "sonnet",
+      "variant": "revised",
+      "cap_usd": 0.3,
+      "timeout_seconds": 55,
+      "status": "completed",
+      "model_usage_ids": [
+        "claude-haiku-4-5-20251001",
+        "claude-sonnet-5-5"
+      ],
+      "cost_usd": 0.042767000000000006,
+      "output": "```text\noriginal table  (240 records)  --copy-->  new table\n      |                                       |\n      |                          237 records are valid\n      |                            3 records failed validation\n      |\n      +-- stays in place until you run cleanup\n```\n\n**What the migration does**\n- It copies 240 records from the original table into the new table.\n- It does not change the original table.\n\n**What cleanup does**\n- Cleanup deletes the original table permanently. You cannot undo it.\n- Run cleanup only after you repair the 3 records that failed validation.\n\n**What is not verified**\n- Only staging has run this migration.\n- I do not know how it behaves in production.\n\n```text\nthe order to follow\n1. run the migration\n2. repair the 3 failed records\n3. run cleanup (the original table is deleted)\n```",
+      "words": 127
+    },
+    {
+      "attempt": "first",
+      "requested_model": "opus",
+      "variant": "baseline",
+      "cap_usd": 0.3,
+      "timeout_seconds": 55,
+      "status": "completed",
+      "model_usage_ids": [
+        "claude-haiku-4-5-20251001",
+        "claude-opus-5-5"
+      ],
+      "cost_usd": 0.078986,
+      "output": "The migration has two steps. Cleanup is the step you cannot undo.\n\n```text\n1. migration          <- copies 240 records into the new table\n                         the original table stays as it is\n2. repair 3 records   <- 3 copied records failed validation\n3. cleanup            <- deletes the original table forever\n```\n\n### Step 1: migration\nThe migration copies 240 records from the original table to the new table. The original table does not change. You can still read your data from it.\n\n### Step 2: repair\nValidation checks each copied record. 3 of the 240 records failed validation. You must repair these 3 records before you run cleanup.\n\n### Step 3: cleanup\nCleanup permanently deletes the original table. After cleanup, the original table is gone and you cannot recover it.\n\n### What is not known\nThe migration ran only on staging. Staging is the test system. Nobody has run it on production, so its behavior on production is not known.\n\nRepair the 3 records first. Run cleanup only after that, and remember that the migration is not yet tested on production.",
+      "words": 179
+    },
+    {
+      "attempt": "first",
+      "requested_model": "opus",
+      "variant": "revised",
+      "cap_usd": 0.3,
+      "timeout_seconds": 55,
+      "status": "completed",
+      "model_usage_ids": [
+        "claude-haiku-4-5-20251001",
+        "claude-opus-5-5"
+      ],
+      "cost_usd": 0.078112,
+      "output": "```text\n1. migration             <- copies 240 records to the new table\n     237 records pass\n     3 records fail validation   <- you must repair these\n2. original table        <- stays, no change\n3. cleanup               <- deletes the original table forever\n```\n\nThe migration copies 240 records into the new table. The original table stays until you run cleanup.\n\nValidation is a check on each copied record. 3 of the 240 records failed it. Repair those 3 records before you run cleanup. Cleanup permanently deletes the original table, so you cannot recover it after that step.\n\nThe migration ran only on staging. Staging is the test environment. Nobody has tested it on production, so its behavior there is not known.",
+      "words": 117
+    },
+    {
+      "attempt": "after-fidelity-edit",
+      "requested_model": "haiku",
+      "variant": "revised",
+      "cap_usd": 0.3,
+      "timeout_seconds": 55,
+      "status": "timeout",
+      "cost_usd": null
+    },
+    {
+      "attempt": "after-fidelity-edit",
+      "requested_model": "sonnet",
+      "variant": "revised",
+      "cap_usd": 0.3,
+      "timeout_seconds": 55,
+      "status": "completed",
+      "model_usage_ids": [
+        "claude-haiku-4-5-20251001",
+        "claude-sonnet-5-5"
+      ],
+      "cost_usd": 0.043453,
+      "output": "```text\noriginal table      240 records     <- stays until you run cleanup\n      |\n      | migration copies the records\n      v\nnew table           240 records     <- 3 of these failed validation\n      |\n      | you run cleanup\n      v\noriginal table      deleted         <- permanent\n```\n\nThe migration copies 240 records from the original table into the new table. The original table stays in place until you run cleanup.\n\nValidation is a check that each record has correct data. 3 of the 240 copied records failed validation. You must repair these 3 records before you run cleanup.\n\nCleanup is the step that deletes the original table. The deletion is permanent. You cannot undo it.\n\nI tested the migration only on staging. Staging is the test environment, not the real one. I do not know how the migration behaves in production. I cannot verify that from here.\n\nOrder of steps:\n\n1. Run the migration.\n2. Repair the 3 records that failed validation.\n3. Run cleanup.",
+      "words": 158
+    },
+    {
+      "attempt": "after-fidelity-edit",
+      "requested_model": "opus",
+      "variant": "revised",
+      "cap_usd": 0.3,
+      "timeout_seconds": 55,
+      "status": "completed",
+      "model_usage_ids": [
+        "claude-haiku-4-5-20251001",
+        "claude-opus-5-5"
+      ],
+      "cost_usd": 0.07832399999999999,
+      "output": "```text\n1. migration   <- copies 240 records into the new table\n               <- the original table stays intact\n2. repair      <- fix the 3 records that failed validation\n3. cleanup     <- permanently deletes the original table\n```\n\nThe migration copies 240 records. The original table stays intact until you run cleanup.\n\nCleanup permanently deletes the original table. You cannot reverse it.\n\n3 of the 240 copied records failed validation. Validation is the check that each record is correct. Repair those 3 records before you run cleanup.\n\nThe migration has only been tested on staging. Staging is a test copy of the system. I don't know how the migration behaves in production.",
+      "words": 110
+    }
+  ]
+}

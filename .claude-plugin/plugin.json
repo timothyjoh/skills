@@ -23,7 +23,8 @@
     "tts-voice",
     "development",
     "t3-code",
-    "delegate-t3-agent",
+    "t3-handoff",
+    "t3-report",
     "code-review",
     "explain-pr"
   ],
@@ -37,7 +38,8 @@
     "./skills/media/storytime",
     "./skills/media/browser-tour",
     "./skills/media/tts-voice",
-    "./skills/development/delegate-t3-agent",
+    "./skills/development/t3-handoff",
+    "./skills/development/t3-report",
     "./skills/development/explain-pr"
   ]
 }

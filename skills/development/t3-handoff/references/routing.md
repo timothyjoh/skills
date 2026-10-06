@@ -14,6 +14,6 @@ An implementation launch is refused when another T3 turn is active in that proje
 
 Run `models` to inspect provider instance IDs and exact model slugs. Every task kind uses the project's default selection, including its model options. An explicit provider override uses that provider's default model unless `--model` is also supplied. If there is no project default provider, supply `--provider` from the live inventory.
 
-`--effort` sets the `reasoningEffort` model option. Use a value supported by the selected provider and model. Model options are provider-specific and the server can reject unsupported options.
+`--effort` sets the model's reasoning effort option. The option name comes from the model's advertised options: Codex models use `reasoningEffort`, Claude models use `effort`. `models` lists each model's options. Use a value supported by the selected provider and model; the server can reject unsupported values.
 
 Code reviews use `review`; independent research checks use `research-review`. Both start in T3 plan mode. Include the revision, comparison base, requirements and expected evidence in review prompts. Neither kind hardcodes a provider or model.

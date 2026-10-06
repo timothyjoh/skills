@@ -20,6 +20,10 @@ Developer sections come first: Summary with fix bullets, then the evidence (Root
 
 Before publishing, the skill walks Desired Behaviour against Acceptance Criteria so nothing appears in one and vanishes from the other, checks every Contract block has a criteria line that tests it, and tags any reproduction steps nobody ran with `(derived from code, needs validation)`.
 
+## Repair before delivery
+
+The agent checks that desired behavior, contracts, and test criteria agree, repairs mismatches, and repeats the check. It also checks word budgets after revisions. A local draft needs the writing skills but no Jira connection. Publishing requires a request to create or update the card, and a read-back confirms that the stored body renders correctly.
+
 ## It's working if
 
 - The developer half fits on one screen and has exactly one text or diff visual.

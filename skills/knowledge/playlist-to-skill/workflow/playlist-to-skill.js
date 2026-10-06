@@ -232,6 +232,8 @@ READ, in this order:
 2. ${c.video_ids.map((v) => `${kbDir}/extractions/${v}.json`).join(', ')}: the concept objects whose name matches this concept or its aliases/folded_in, plus that video's decision_rules and example.
 3. Use the extractions as the source of truth. Omit unsupported examples rather than reading transcripts again. Attribute competing advice to its creators.
 
+For any reference page longer than 100 lines, add a linked "## Contents" near the top covering each substantive H2 heading. For long flat lists, group entries under useful headings first.
+
 TEMPLATE: practitioner voice, "Use X when Y", never "the video explains". Target 1,000-1,800 tokens; density over length, never pad.
 
 # ${c.title}
@@ -284,6 +286,7 @@ const compactHow = `${NODE} -e 'const fs=require("fs"),d="${kbDir}/extractions";
 const support = await parallel([
   () => agent(
     `Write ${skillDir}/glossary.md for the "${channel}" skill. Every significant term the creator uses with a specific meaning, alphabetized. Format one per line: **Term**: definition (concept: [id](concepts/<id>.md) when one applies). Merge duplicates across videos; keep the creator's wording. Max ~1,500 tokens.
+If the page exceeds 100 lines, add a linked "## Contents" near the top covering its H2 headings; group long flat lists into useful sections.
 Get the terms compactly with: ${compactTerms}
 Valid concept ids: ${canon.concepts.map((c) => c.id).join(', ')}
 Keep creator attribution and competing advice distinct. Do NOT run git commands. Return path and tokens_est.`,
@@ -293,6 +296,7 @@ Keep creator attribution and competing advice distinct. Do NOT run git commands.
 ## <Pattern name>
 **When to use**: ... **How**: numbered steps with the creator's numbers/tools/settings. **Trade-offs**: ... **See**: [concept](concepts/<id>.md)
 Merge the same technique taught across videos into one entry, preferring an explicit update from the same creator. Keep competing approaches attributed separately. Max ~2,000 tokens.
+If the page exceeds 100 lines, add a linked "## Contents" near the top covering its H2 headings; group long flat lists into useful sections.
 Get the material compactly with: ${compactHow}
 Valid concept ids: ${canon.concepts.map((c) => c.id).join(', ')}
 Keep creator attribution and competing advice distinct. Do NOT run git commands. Return path and tokens_est.`,
@@ -305,6 +309,7 @@ Keep creator attribution and competing advice distinct. Do NOT run git commands.
 4. Thresholds and defaults: the specific numbers and rules of thumb the creator commits to.
 5. Tells and smells: "if you see X, you're in trouble Y."
 No term definitions (glossary), no prose paragraphs (concepts). Compact tables and rules; what you'd keep on one printed page. Cite the concept page in brackets where one applies. Max ~1,200 tokens.
+If the page exceeds 100 lines, add a linked "## Contents" near the top covering its H2 headings; group long flat lists into useful sections.
 Get every decision rule compactly with: ${compactRules}
 Also read the "voice" array in ${kbDir}/taxonomy.json and open with a 3-5 line "Decision approaches" block.
 Valid concept ids: ${canon.concepts.map((c) => c.id).join(', ')}
@@ -318,7 +323,7 @@ log(`Support files: ${support.filter(Boolean).map((s) => s.path.split('/').pop()
 const skillMd = await agent(
   `Write the entry point of the "${channel}" skill: ${skillDir}/SKILL.md, and the video index ${skillDir}/sources.md.
 
-HARD BUDGET: SKILL.md body under 4,000 tokens (~14k chars). Compaction truncates from the END, so the most important content goes FIRST. It is the only file loaded at work time; everything else is on-demand.
+HARD BUDGET: SKILL.md body under 4,000 tokens (~14k chars) and under 500 lines. Put essential guidance first; supporting pages load on demand. Link every concept and support page directly from SKILL.md with a condition for reading it. Cross-links between references are useful, but cannot be their only discovery path. If sources.md exceeds 100 lines, add useful H2 sections and a linked "## Contents" near the top.
 
 READ: ${kbDir}/taxonomy.json (groups, concepts, voice, superseded). Then the "## Core Idea" and "## Key Takeaways" of each ${skillDir}/concepts/*.md (use grep -A to pull just those sections, not whole files). Skim ${skillDir}/cheatsheet.md for the top rules.
 
@@ -359,7 +364,7 @@ description: "Knowledge skill distilled from the YouTube playlist ${channel} (${
 ## Scope & Limits
 <what the playlist covers and does not; that content is synthesized from transcripts, not the creator's words verbatim; date range of the videos>
 
-sources.md STRUCTURE: a table in playlist order from scope.json.entries: | Position | Creator | Date | Kind | Title (linked to youtube.com/watch?v=id when an ID exists) | Fetch status | Concepts (linked) |. Account for EVERY entry, including repeated IDs, unavailable entries, failed fetches, missing captions, and videos with zero concepts. Then a second table "Manual additions" for scope.json videos with source "manual" (added by pts_add.js; they have no playlist position, so use their "added" date order and a "—" position). Then a separate previous-sources section for removed playlist entries retained for fold-in (current: false). Kind is "video" or "short" from ${kbDir}/raw/manifest.json. Mark superseded videos with "(older take)". Use the manifest for dates and titles and taxonomy.json for the concept mapping.
+sources.md STRUCTURE: a table in playlist order from scope.json.entries: | Position | Creator | Date | Kind | Title (linked to youtube.com/watch?v=id when an ID exists) | Fetch status | Concepts (linked) |. Account for EVERY entry, including repeated IDs, unavailable entries, failed fetches, missing captions, and videos with zero concepts. Then a second table "Manual additions" for scope.json videos with source "manual" (added by pts_add.js; they have no playlist position, so use their "added" date order and an empty position). Then a separate previous-sources section for removed playlist entries retained for fold-in (current: false). Kind is "video" or "short" from ${kbDir}/raw/manifest.json. Mark superseded videos with "(older take)". Use the manifest for dates and titles and taxonomy.json for the concept mapping.
 
 Never attribute all methods to the curator. Distinguish creators in concept pages and support files. Every relative link must resolve. Do NOT run git commands. Return path (of SKILL.md) and tokens_est.`,
   { label: 'skill.md', phase: 'Support', schema: SUPPORT_SCHEMA }
@@ -374,7 +379,7 @@ phase('Validate')
 const validation = await agent(
   `Validate the generated skill. Node is at ${NODE}. Run:
   ${quote(NODE)} ${quote(scriptsDir + "/pts_validate.js")} --skill-dir ${quote(skillDir)} --kb-dir ${quote(kbDir)} --write-manifest
-Report its output verbatim. If it prints E3 broken links or E4 missing timestamps for a handful of pages, fix ONLY those pages (correct the link target to a valid concepts/<id>.md, or add the missing "## Sources" line from the video's extraction JSON), then run the validator once more and report the second output too. Do not rewrite pages for any other reason. Do NOT run git commands.`,
+Report the output. Repair E3 links from the known file list, E4 timestamps from extraction JSON, E7 direct reference links in SKILL.md, and E8 contents lists from the page headings. Rerun the validator after each targeted repair, up to two repair passes. Preserve source meaning. Report unresolved errors with file paths; an unresolved error means validation is incomplete. Other errors return to the phase that owns them, never disappear by dropping sources. Do NOT run git commands.`,
   { label: 'validate', phase: 'Validate', effort: 'low' }
 )
 

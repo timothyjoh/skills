@@ -13,8 +13,9 @@
     "version": "changeset version && node scripts/sync-plugin-version.mjs",
     "check-plugin-version": "node scripts/sync-plugin-version.mjs --check",
     "validate": "claude plugin validate . --strict",
-    "test:delegate-t3": "node --test skills/development/delegate-t3-agent/scripts/tests/*.test.mjs",
-    "test:explain-pr": "node --test skills/development/explain-pr/scripts/tests/*.test.mjs"
+    "test:t3-handoff": "node --test skills/development/t3-handoff/scripts/tests/*.test.mjs",
+    "test:explain-pr": "node --test skills/development/explain-pr/scripts/tests/*.test.mjs",
+    "test:knowledge": "node --test scripts/tests/generated-skill-navigation.test.mjs skills/knowledge/playlist-to-skill/scripts/pts_pipeline.test.js"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.7.0",

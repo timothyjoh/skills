@@ -14,6 +14,10 @@ The [tts-voice](./tts-voice.md) skill installed beside this one and set up, plus
 
 Three files: a `.script` with one `[TAG] line` per line, a `.cast.json` mapping tags to voice names (or `default`, or a WAV path), and the MP3 the render script writes. Pacing is a single flag: `--pause 600` for bedtime, `--pause 250` for fast dialogue.
 
+## Check the audio
+
+Before synthesis, the agent checks every cast entry against the available voices or reference WAVs. After rendering, it checks for a positive audio duration and, when playback is available, listens to the opening and final line. A truncated line is split and rendered again. The result states when listening could not be verified.
+
 ## It's working if
 
 - The script reads as the original story with tags in front of lines, nothing reworded.

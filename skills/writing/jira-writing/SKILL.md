@@ -9,6 +9,10 @@ A card has two readers with different jobs. A developer needs to know what to ch
 
 The full rule set is in [references/rules.md](./references/rules.md). The templates are [references/bug.md](./references/bug.md), [references/story.md](./references/story.md) and [references/task.md](./references/task.md). Read the rules once per session. Read the one template that matches the card type.
 
+## Prerequisites
+
+`show-me` and `asd-ste100` must be installed for the visual and language passes. If the harness has no Skill tool, read their installed `SKILL.md` files and follow them. Writing a local draft needs no Jira connection; publishing needs the Atlassian tools and access to the destination project. If a dependency is missing, identify it and retain the draft with the unfinished pass stated.
+
 ## Budget
 
 - Developer half: one screen. Summary of 3 lines plus fix bullets. Evidence section of 150 words or less plus one visual. Fix section of 120 words or less plus an alternatives table.
@@ -81,6 +85,8 @@ Walk these pairs against each other before publishing:
 5. The Reference section pins repo, branch, commit and date.
 6. The fix section heading reads "Suggested Fix from Claude" on a bug, "Suggested Approach from Claude" on a story or task.
 
+Correct each failed pair, then repeat the cross-check on the revised draft. Recheck the word budgets and language after revisions. A draft is ready only when these checks pass; missing evidence remains explicitly labelled.
+
 ## Publish
 
 Write the body to a file first, so backticks survive.
@@ -95,7 +101,7 @@ editJiraIssue    cloudId, issueIdOrKey, contentFormat: "markdown",
                  fields: { description: <file> }
 ```
 
-Read the card back with `getJiraIssue` and confirm the fences and the table survived. If a fence collapsed, switch that block to plain indented text and edit again.
+Read the card back with `getJiraIssue` and confirm the fences and the table survived. If a fence collapsed, switch that block to plain indented text, edit again, and read back again. If two repairs fail, preserve the local body and report the remaining rendering defect. Publish only when creating or updating the card is within the user's request; a drafting request ends with the local body.
 
 ## Example: a bug card Summary and Root Cause
 

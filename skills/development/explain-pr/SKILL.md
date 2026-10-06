@@ -5,29 +5,43 @@ description: Explain a PR or commit range as a staff-engineer brief, rendered as
 
 # Explain PR
 
-A **brief** is an RFC-style HTML page that explains one change to a staff engineer. The brief pins two commits. Every code link, peek and call-stack frame in it is checked against those commits, so the brief cannot point at code that does not exist or claim a change the diff does not contain.
+A **brief** is an RFC-style HTML page that explains one change to a staff engineer. The brief pins two commits. Every code link, peek and call-stack frame in it is checked against those commits. These checks validate code references; the author checks that the explanation matches the code and separates observed behavior from inference.
 
 Adapted from the authoring and file-lens prompts in [devdotfast/whiteboard](https://github.com/devdotfast/whiteboard) (MIT).
 
 ## Prerequisites
 
+- The `asd-ste100` skill for writing the brief and group summaries.
 - Node 24 or newer. `scripts/brief.mjs` uses the standard library only.
 - `git`.
 - `gh`, authenticated, to pin a PR and to post the brief as a PR comment.
 - Optional: `diffr` (`brew install devdotfast/tap/diffr`) to run the per-group review command.
 - The HTML page loads marked, mermaid and highlight.js from jsDelivr when you open it, so it needs network access.
 
+Check `node --version` (24 or newer) and `git --version` before init. For PR work, also check `gh --version` and `gh auth status`. On macOS, install missing tools with `brew install node@24 git gh` and put Node 24 on `PATH`. Branch-only briefs do not need GitHub authentication.
+
 ## Paths
 
 The **skill folder** is the directory that holds this `SKILL.md`. Resolve it to an absolute path before you start, and use these absolute paths below:
 
 - `B=<skill folder>/scripts/brief.mjs`
-- `<skill folder>/grouping.md`
-- `<skill folder>/pseudocode.md`
+- [grouping.md](grouping.md), read by the grouping agent in step 2
+- [pseudocode.md](pseudocode.md), read only when init lists pseudocode candidates
 
 A subagent does not know where the skill is installed, so give it these absolute paths.
 
 Briefs go under `$EXPLAIN_PR_DIR`, or `~/reviews` when that variable is not set. Call this `<reviews>`.
+
+## Progress
+
+Track these milestones in the host's plan or a short checklist:
+
+- [ ] Commits pinned and changed files accounted for.
+- [ ] Brief, groups, and any pseudocode written from evidence.
+- [ ] Structural, code-reference, and prose checks pass.
+- [ ] Render inspected; posted only when requested.
+
+Choose group boundaries and diagram type from the change. The pinned commits and output schemas stay fixed; the amount of explanation scales with the review.
 
 ## Steps
 
@@ -56,22 +70,27 @@ Both check their own output. Go on to step 3 while they run.
 
 - Requirements come from the user's request, the PR title and body, and the Jira card the PR names. Read the card with the Atlassian tools when they are available.
 - Read the whole diff: `git -C <repo> diff <base> <head>`. For a large diff, read it file by file.
+- Gather existing test results, CI runs, logs, screenshots, and rollout notes relevant to the changed behavior. Prefer supplied evidence. Record each result's source, tested commit, environment, and limits where known. Reading a test is not running it. Keep new checks within the authorized review scope; missing evidence can be reported without a new test run or live action.
 
 Done when you can say what each changed file does and why.
 
 ### 4. Write the brief
 
-Write `<dir>/doc.md` in the shape and syntax below. Write incrementally, section by section. Write in short, direct sentences, no em dashes.
+Write `<dir>/doc.md` in the shape and syntax below. Write incrementally, section by section.
+
+Call the Skill tool with `asd-ste100` in **STE-flavored** mode on the draft. If the harness has no Skill tool, read the installed skill's `SKILL.md` and follow it. Apply it to all authored prose, including headings, diagram labels and code-link labels. Preserve quoted requirements, code identifiers, commands, link targets and the syntax below. Preserve facts, conditions and uncertainty. Keep the language analysis internal unless the user asks for it. Use no em dashes.
 
 ### 5. Check
 
-Wait for the subagents. Run `node $B check <dir>` and fix every problem it lists. Then read the whole brief back against the code, and fix contradictions and unverified claims.
+Wait for the subagents. Run `node $B check <dir>` and fix every problem it lists. Then read the whole brief back against the code and gathered evidence, and fix contradictions and unsupported claims. Check the authored prose in `doc.md` and `groups.json` against the language skill. The script checks structure and code references, not writing style or runtime behavior.
 
-Done when check prints `ok`, every sentence about code carries a link, and each link shows what its sentence says.
+After each repair, rerun `check` and reread the changed claims against their code. If the same check still fails after two targeted repairs, report the failure and preserve the draft.
+
+Done when check prints `ok`, every sentence about code carries a link, each link shows what its sentence says, and behavioral claims cite observed evidence or are labeled as inferred or unverified.
 
 ### 6. Render
 
-Run `node $B render <dir>`, then `open <dir>/index.html`. Report the path and one line per group.
+Run `node $B render <dir>`, then `open <dir>/index.html`. Inspect the rendered page for readable diagrams, code peeks, and group cards. Fix rendering defects and rerun `check` and `render` before delivery. If no browser is available, report that visual inspection is pending. Report the path and one line per group.
 
 ### 7. Post to the PR (when the user asks)
 
@@ -81,7 +100,7 @@ In the comment, Mermaid renders natively, each peek becomes a permalink that Git
 
 ## Brief shape
 
-Top-level `##` sections, in this order. Keep a small change's brief short and omit sections that add nothing.
+Top-level `##` sections, in this order. Keep a small change's brief short and omit sections that add nothing. Keep Verification and rollout, even if it only states the evidence gap.
 
 1. **What / why:** 2 to 4 sentences on what the change is and why it was made.
 2. **Requirements:** the user's own words as short bullets. Quote verbatim with `>` where you have the source. Omit when you have no source.
@@ -95,7 +114,10 @@ Top-level `##` sections, in this order. Keep a small change's brief short and om
 4. **Implementation:** how the code delivers the design, at the level of functions and files, walked in reading order from the entry point.
    - A `callstack` for the old and new path through each user flow. Root it at the entry point (a button click, route, CLI command, queue message) and include unchanged frames along the way.
    - A `peek` for the few spots that carry the mechanism or an invariant. Link everything else inline.
-5. **Changes by group:** the heading `## Changes by group`, then a line `<!-- groups -->`. The renderer puts the group cards there, each with its files, pseudocode and diffr command.
+5. **Verification and rollout:** a compact paragraph or a few bullets, scaled to the change:
+   - **Evidence:** describe observed before/after behavior for the same trigger or input when available, with links to results or artifacts. For each reported check, give the command or procedure, outcome, source, tested commit, and environment where known. Identify evidence from a different commit or environment than the brief's target; mark unknown provenance and inference explicitly. Test counts alone do not demonstrate the changed behavior. Label relevant checks not executed as **Not run**, and missing results as **No evidence supplied**.
+   - **Rollout:** name affected users, callers, or systems and relevant activation conditions. Explain what reverting code or disabling a flag restores, and any effects it leaves behind, such as migrated data or sent messages. Support these statements with code links or rollout notes; label unknowns. For a docs-only change, state the affected readers and document rollback briefly. Describe rollout and rollback; performing them requires separate task authorization.
+6. **Changes by group:** the heading `## Changes by group`, then a line `<!-- groups -->`. The renderer puts the group cards there, each with its files, pseudocode and diffr command.
 
 ## Syntax
 

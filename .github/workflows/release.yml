@@ -27,7 +27,7 @@ jobs:
         run: npm ci
 
       - name: Test T3 delegation
-        run: npm run test:delegate-t3
+        run: npm run test:t3-handoff
 
       - name: Create Version Pull Request
         uses: changesets/action@v1

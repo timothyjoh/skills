@@ -4,12 +4,16 @@ import { resolve, basename } from 'node:path';
 import { homedir } from 'node:os';
 
 export const t3Home = () => resolve(process.env.T3CODE_HOME || resolve(homedir(), '.t3'));
-export function assertSupported(home) {
-  if (existsSync(resolve(home, 'userdata/statev2.sqlite'))) throw Error('T3 orchestration V2 detected. This skill supports the V1 API; update the adapter before dispatch.');
+// Protocol 2 servers copy state.sqlite to statev2.sqlite on first start and use only the
+// copy, so prefer it when present. Both keep projects in projection_projects.
+export function stateDb(home, protocol) {
+  const v2 = resolve(home, 'userdata/statev2.sqlite'), v1 = resolve(home, 'userdata/state.sqlite');
+  if (protocol === 2) return v2;
+  if (protocol === 1) return v1;
+  return existsSync(v2) ? v2 : v1;
 }
-export function projects(home = t3Home()) {
-  assertSupported(home);
-  const dbPath = resolve(home, 'userdata/state.sqlite');
+export function projects(home = t3Home(), { protocol } = {}) {
+  const dbPath = stateDb(home, protocol);
   if (!existsSync(dbPath)) throw Error(`T3 database not found: ${dbPath}. Set T3CODE_HOME to the running instance's data folder.`);
   const db = new DatabaseSync(dbPath, { readOnly: true });
   try {

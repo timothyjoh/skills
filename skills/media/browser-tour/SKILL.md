@@ -11,7 +11,7 @@ This is deliberately chat-turn-paced, not an in-page click overlay. The point is
 
 ## Prerequisites
 
-The Claude-in-Chrome browser extension and its MCP tools (Claude Code). Audio narration is optional and uses the `tts-voice` skill installed beside this one.
+The Claude-in-Chrome browser extension and its MCP tools (Claude Code). Audio narration is optional and uses the `tts-voice` skill installed beside this one. When audio is requested, call the Skill tool with `tts-voice` (or read its installed `SKILL.md` when that tool is absent). Resolve its script as `../tts-voice/scripts/tts-voice.sh` relative to this skill folder, or use `BROWSER_TOUR_TTS` for an alternate path. Check that it exists before offering voices. Local playback below uses macOS `afplay`; on another host, use its audio player or deliver the audio file. Missing browser tools block the live tour; missing audio tools need only block audio.
 
 ## Setup
 
@@ -75,7 +75,7 @@ Use after a plan's work is done (after code review passes, or when the user asks
 
 ## Audio narration (Modes 3 and 4, optional in 1 and 2 on request)
 
-At the start of Mode 3 or 4, ask the user whether they want audio narration for the tour, and if so which voice. Synthesis is local and free through the sibling `tts-voice` skill; resolve its script relative to this skill's folder as `../tts-voice/scripts/tts-voice.sh`, and offer the voices its `--list-voices` prints (plus `default`).
+At the start of Mode 3 or 4, ask the user whether they want audio narration for the tour, and if so which voice. Synthesis is local and free through the sibling `tts-voice` skill; use the resolved script path from Prerequisites, and offer the voices its `--list-voices` prints (plus `default`).
 
 If enabled, per stop:
 
@@ -85,6 +85,10 @@ If enabled, per stop:
    - Concise. Say the one or two things that matter about this stop, not everything you would write on screen. Long narration is more likely to hit a TTS length limit and get cut off mid-sentence, and it drags the pacing of the tour regardless.
 2. **Print that exact spoken-text string to chat, verbatim, before generating audio from it**, labeled clearly (under a "Narration:" line) so the user can read along and, if playback ever sounds cut off, immediately tell whether the *audio* got cut short or the *text itself* was already that short. Do not paraphrase it after the fact: what is printed must be the literal string passed to the TTS script.
 3. Generate the audio with `tts-voice.sh "<text>" --voice <voice> -o <path>` from that exact string, then play it back with `afplay <path>` (blocking, so the pause naturally follows the narration finishing) before waiting for the user's turn.
+
+## Check each stop
+
+Before narrating, confirm the loaded page contains the feature or source claimed for this stop. If it does not, correct the navigation or narration and inspect again. If the page remains unavailable, report the gap and offer an alternative. A stop is complete when its grounded narration is delivered and the tour is paused for the user.
 
 ## Shared guardrails
 

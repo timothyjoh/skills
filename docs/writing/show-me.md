@@ -12,6 +12,10 @@ Reach for it when you are discussing a shape: how something is wired, where a ch
 
 Each shape has a matching notation, and the skill carries an example of each. The discipline is to pick one or two, never all of them, and to keep only the calls, files, props and states the current question needs. A `diff` is preferred whenever the surrounding shape already exists, matched to the thing being changed: a component diff for a component change, a file-tree diff for a layout change.
 
+## Check the picture
+
+The agent compares labels, arrows, and ordering with the source. HTML output is inspected at desktop and mobile widths when browser tools are available, then corrected and checked again. When visual inspection is unavailable, the result says so.
+
 ## It's working if
 
 - The picture arrives before the explanation, and the explanation is shorter than it would have been without it.

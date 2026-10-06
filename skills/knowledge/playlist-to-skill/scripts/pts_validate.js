@@ -8,7 +8,8 @@
  *   E4  every concept page has a `## Sources` section with >= 1 [h:mm:ss] timestamp
  *   E5  every concept id in taxonomy.json has a page
  *   W1  concept page not listed in taxonomy.json
- *   W2  concept page not linked from SKILL.md (unreachable from the entry point)
+ *   E7  every concept and support page linked directly from SKILL.md
+ *   E8  references over 100 lines have a contents list covering their H2 sections
  *   W3  concept page has < 2 links to sibling concepts
  *
  * --write-manifest builds <skill-dir>/manifest.json from scope + raw manifest + taxonomy.
@@ -47,6 +48,7 @@ else {
     if (!/^name:\s*\S/m.test(fm[1])) E('E1', 'SKILL.md frontmatter lacks name');
     if (!/^description:\s*\S/m.test(fm[1])) E('E1', 'SKILL.md frontmatter lacks description');
     const body = fm[2];
+    if (body.trimEnd().split(/\r?\n/).length >= 500) E('E2', 'SKILL.md body must be under 500 lines');
     if (body.length > 18000) E('E2', `SKILL.md body is ${body.length} chars (~${tokens(body)} tokens); budget is ~4k tokens`);
     else if (body.length > 14000) W('E2', `SKILL.md body is ${body.length} chars (~${tokens(body)} tokens); trim toward 4k tokens`);
   }
@@ -67,14 +69,28 @@ for (const [rel, s] of Object.entries(files)) {
     if (l.split('#')[0] && !fs.existsSync(target)) E('E3', `${rel}: broken link ${l}`);
   }
 }
-// E4, W2, W3
-const skillLinks = new Set(skillMd ? linksIn(skillMd).map((l) => path.normalize(l)) : []);
+// E7 direct discovery and E8 navigation for long references.
+const skillLinks = new Set(skillMd ? linksIn(skillMd).map(l => path.normalize(decodeURI(l.split('#')[0]))) : []);
+for (const [rel, source] of Object.entries(files)) {
+  if (rel === 'SKILL.md') continue;
+  if (!skillLinks.has(path.normalize(rel))) E('E7', `${rel}: not linked directly from SKILL.md`);
+  if (source.trimEnd().split(/\r?\n/).length <= 100) continue;
+  const plain = source.replace(/```[\s\S]*?```/g, '');
+  const contents = plain.match(/^## (?:Contents|Table of contents)\s*\n([\s\S]*?)(?=^## |$(?![\s\S]))/im);
+  const headings = [...plain.matchAll(/^## (.+)$/gm)].map(m => m[1].trim())
+    .filter(h => !/^(Contents|Table of contents)$/i.test(h));
+  const entries = contents ? [...contents[1].matchAll(/\[([^\]]+)\]\(#([^)]+)\)/g)] : [];
+  const anchor = h => h.toLowerCase().replace(/[^\p{L}\p{N}_ -]/gu, '').replace(/ /g, '-');
+  if (!contents || plain.slice(0, contents.index).split(/\r?\n/).length > 30 || !headings.length || headings.some(h => !entries.some(e => e[1].trim() === h && e[2] === anchor(h)))) {
+    E('E8', `${rel}: over 100 lines; add a linked Contents within the first 30 lines covering every H2 section`);
+  }
+}
+// E4, W3
 for (const f of conceptFiles) {
   const rel = `concepts/${f}`, s = files[rel];
   const src = s.split(/^## Sources\s*$/m)[1];
   if (!src) E('E4', `${rel}: no "## Sources" section`);
   else if (!/\[\d+:\d{2}:\d{2}\]|\[\d{1,2}:\d{2}\]/.test(src)) E('E4', `${rel}: Sources has no [h:mm:ss] timestamp`);
-  if (!skillLinks.has(path.normalize(rel))) W('W2', `${rel}: not linked from SKILL.md`);
   const sib = linksIn(s).filter((l) => /^(\.\/)?[a-z0-9-]+\.md$/.test(l)).length;
   if (sib < 2) W('W3', `${rel}: only ${sib} link(s) to sibling concepts`);
 }

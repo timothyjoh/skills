@@ -118,7 +118,7 @@ function expandSkill(command: string): string {
 }
 ```
 
-- For a visual UI, layout, state comparison, or concept too dense for Mermaid, write one focused HTML file: a diagram, an infographic, or a short slide deck, whichever fits the point. Match the product's colors, type, spacing, and components; use real labels and data; support desktop and mobile. Then open it for the user:
+- For a visual UI, layout, state comparison, or concept too dense for Mermaid, write one focused HTML file: a diagram, an infographic, or a short slide deck, whichever fits the point. Match the product's colors, type, spacing, and components; use real labels and data; support desktop and mobile. Inspect the rendered file at desktop and mobile widths, fix clipped labels or broken diagrams, and inspect again. If no browser is available, report that visual inspection is pending. Open it with the host's file-opening tool, or on macOS:
 
 ```
 Bash(open path/to/show-me-{description}.html)
@@ -129,3 +129,5 @@ Bash(open path/to/show-me-{description}.html)
 Place each visual next to the short text it supports. Keep only the calls, files, props, states, and boundaries needed to answer the user's current question or the options to resolve the current discussion point.
 
 You may use one of these, you may use several, it is unlikely you will use all of them. Use your judgement and don't overwhelm the user.
+
+Before delivery, compare the visual's labels, arrows, and ordering with the source material. Correct any mismatch and check the revised view again. A schematic may omit detail, but it must preserve the behavior being explained.

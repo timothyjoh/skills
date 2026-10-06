@@ -1,0 +1,6 @@
+interface:
+  display_name: "T3 Handoff"
+  short_description: "Hand off local T3 work and follow the agent's progress"
+  default_prompt: "Use $t3-handoff to select a local project, hand off this task, follow its progress reports, and bring back the result."
+policy:
+  allow_implicit_invocation: true

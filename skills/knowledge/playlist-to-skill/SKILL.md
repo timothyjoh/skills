@@ -13,9 +13,16 @@ Preserve the channel-to-skill processing principles: fetch sequentially, read ea
 
 ## Prerequisites
 
-Node 18 or newer and `yt-dlp` on PATH. No YouTube API key. Fetching means downloading captions and metadata, as in channel-to-skill; video and audio media files are not downloaded.
+Check `node --version` (18 or newer) and `yt-dlp --version` before enumerating. On macOS, missing tools can be installed with `brew install node yt-dlp`; elsewhere use the tools' documented installers. The scripts use Node built-ins and need no npm packages or YouTube API key. Fetching means downloading captions and metadata, as in channel-to-skill; video and audio media files are not downloaded.
 
 The bundled workflow uses a host-provided `Workflow` tool with `agent`, `parallel`, `phase`, and `log` globals. If that tool is unavailable, read [workflow/playlist-to-skill.js](workflow/playlist-to-skill.js) and execute its phases with available tools, using agents where supported or sequential execution otherwise. Do not run that workflow file directly with Node. The scripts under `scripts/` are ordinary Node programs.
+
+Track these milestones in the host's plan or a short progress checklist. Mark each complete only after its checks pass:
+
+- [ ] Tools checked; every playlist position recorded in scope.
+- [ ] Fetch statuses and readable-transcript extractions accounted for.
+- [ ] Taxonomy, concept pages, and support files rendered.
+- [ ] Validation passes; coverage gaps and output paths reported.
 
 ## 1. Resolve the playlist and paths
 
@@ -103,6 +110,8 @@ A large missing-caption fraction is a reported limitation, not a reason to drop 
 ```
 
 Require zero errors. Resolve failed extraction or rendering phases before reporting completion. Read the cheatsheet and representative concept pages: they must express usable decisions, with source attribution and timestamps, rather than video recaps. Review `sources.md` against `scope.json.entries`; every playlist position must be accounted for. Check that agents wrote only inside KB and OUT.
+
+After a repair, rerun the validator and the affected content checks. Keep verification open until they pass. If the same failure persists after two targeted repairs, report the failing check and saved paths. Generated reference pages over 100 lines need a contents list near the top that matches their headings; link every concept and support page directly from `SKILL.md`.
 
 Report playlist entries, unique current IDs, retained previous sources, fetched transcripts, unavailable/no-caption/failed entries, empty extractions, pending work, concept count, entry-point size, and measured token spend if the host provides it. Distinguish completed processing from unavailable source material. Give the generated skill path and how to invoke it. Commit generated files only when the user's repository workflow authorizes commits; never publish automatically.
 

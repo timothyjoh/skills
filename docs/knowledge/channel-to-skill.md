@@ -53,6 +53,12 @@ By instruction at extraction, yes. Transcripts are not pre-trimmed.
 **What if most videos have no captions?**
 The fetch step reports `no-captions` per video. If that is more than a third of the scope, the run stops and says so; a channel without captions is not worth a skill.
 
+## Validation and navigation
+
+The agent tracks scope, extraction, rendering, and validation separately. It reruns failed checks after targeted repairs and reports any unresolved failure with the saved paths. Generated reference pages over 100 lines have a contents list covering their main sections. Every concept and support page is linked directly from the generated `SKILL.md`.
+
+The tool versions are checked before enumeration. The host's Workflow tool runs the bundled pipeline when available; other hosts execute the same phases with their available tools. The workflow file itself is not a standalone Node script.
+
 ## It's working if
 
 - The run asks you exactly one question, and it is about which videos; each option names a long-form count and a Shorts count.
