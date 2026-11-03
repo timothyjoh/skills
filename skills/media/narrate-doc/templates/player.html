@@ -1,0 +1,342 @@
+<style>
+body { padding-bottom: 110px; }
+[data-say] { cursor: default; border-radius: 4px; transition: background-color .2s, box-shadow .2s; }
+[data-say]:hover { background-color: rgba(55, 53, 47, 0.04); }
+.say-now, tr.say-now > td, tr.say-now > th { background-color: rgba(255, 210, 0, 0.30) !important; }
+.say-now { box-shadow: 0 0 0 3px rgba(255, 210, 0, 0.30); }
+.say-anchored { text-decoration: underline; text-decoration-color: rgba(233, 164, 0, 0.6); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+tr.say-anchored > td { text-decoration: underline; text-decoration-color: rgba(233, 164, 0, 0.6); }
+.say-comment, .say-mynote { border-left: 3px solid #e9a400; background: #fff8e6; padding: .5em .8em; margin: .5em 0; border-radius: 6px; font-size: .92em; white-space: pre-wrap; }
+.say-comment-head, .say-mynote-head { font-size: .82em; font-weight: 600; opacity: .7; margin-bottom: .2em; }
+.say-mynote { border-left-color: #2f6fdf; background: #eef4ff; }
+.say-mynote button { font-size: .8em; margin-left: .5em; border: none; background: none; color: #2f6fdf; cursor: pointer; padding: 0; }
+.say-composer { border: 2px solid #2f6fdf; background: #fff; border-radius: 8px; padding: .6em; margin: .6em 0; font-size: .95em; }
+.say-composer textarea { width: 100%; min-height: 90px; font: inherit; border: 1px solid #ccd; border-radius: 6px; padding: .4em; box-sizing: border-box; }
+.say-composer .row { display: flex; gap: .5em; margin-top: .4em; align-items: center; }
+.say-composer .hint { font-size: .78em; opacity: .6; margin-left: auto; }
+#say-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1000; background: #1f1f1f; color: #eee; font: 14px/1.3 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 8px 12px; box-shadow: 0 -2px 12px rgba(0,0,0,.25); }
+#say-bar .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+#say-bar button, #say-bar select { background: #333; color: #eee; border: 1px solid #444; border-radius: 6px; padding: 5px 9px; font: inherit; cursor: pointer; }
+#say-bar button:hover { background: #444; }
+#say-bar button.on { background: #2f6fdf; border-color: #2f6fdf; }
+#say-bar #say-play { font-size: 16px; min-width: 44px; background: #e9a400; color: #111; border-color: #e9a400; font-weight: 700; }
+#say-bar label { display: flex; gap: 4px; align-items: center; cursor: pointer; opacity: .9; }
+#say-bar #say-sec { max-width: 280px; }
+#say-status { margin-left: auto; opacity: .8; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#say-progress { height: 4px; background: #333; margin-top: 7px; border-radius: 2px; cursor: pointer; position: relative; }
+#say-progress div { height: 100%; background: #e9a400; border-radius: 2px; width: 0; }
+#say-help { display: none; position: fixed; bottom: 80px; right: 12px; z-index: 1001; background: #1f1f1f; color: #eee; padding: 12px 16px; border-radius: 8px; font: 13px/1.6 -apple-system, sans-serif; }
+#say-help kbd { background: #333; border-radius: 3px; padding: 0 5px; }
+</style>
+<div id="say-help">
+<b>Keys</b><br>
+<kbd>Space</kbd> play / pause<br>
+<kbd>←</kbd> <kbd>→</kbd> previous / next paragraph<br>
+<kbd>Shift</kbd>+<kbd>←</kbd> <kbd>→</kbd> previous / next section<br>
+<kbd>C</kbd> add my comment on the current paragraph (pauses)<br>
+<kbd>⌘</kbd>+<kbd>Enter</kbd> save comment and resume<br>
+<kbd>Esc</kbd> cancel comment<br>
+<kbd>F</kbd> follow the reading position again (scrolling it back into view also does)<br>
+<kbd>[</kbd> <kbd>]</kbd> slower / faster<br>
+Double-click any paragraph to read from there.
+</div>
+<div id="say-bar">
+  <div class="row">
+    <button id="say-prevsec" title="Previous section (Shift+←)">⏮</button>
+    <button id="say-prev" title="Previous paragraph (←)">◀</button>
+    <button id="say-play" title="Play / pause (Space)">▶</button>
+    <button id="say-next" title="Next paragraph (→)">▶︎▶︎</button>
+    <button id="say-nextsec" title="Next section (Shift+→)">⏭</button>
+    <select id="say-sec" title="Jump to section"></select>
+    <select id="say-rate" title="Speed ([ and ])"></select>
+    <label id="say-skipc-label" title="Skip the comments that are in the document"><input type="checkbox" id="say-skipc"> skip comments</label>
+    <button id="say-follow" class="on" title="Keep the paragraph being read centered (F). Scrolling it out of view pauses this; scrolling it back resumes.">Follow</button>
+    <button id="say-comment" title="Add my comment here (C)">💬 Comment</button>
+    <button id="say-export" title="Download my comments as Markdown and copy them">Export (0)</button>
+    <button id="say-helpbtn" title="Keyboard shortcuts">?</button>
+    <span id="say-status"></span>
+  </div>
+  <div id="say-progress"><div></div></div>
+</div>
+<script>
+(() => {
+  const D = /*__DATA__*/null;
+  const NOTES_KEY = 'say-notes:' + D.key, POS_KEY = 'say-pos:' + D.key, PREF_KEY = 'say-prefs:' + D.key;
+  const $ = (id) => document.getElementById(id);
+  const blocks = [];
+  const secStart = [];
+  let offset = 0;
+  D.sections.forEach((s, si) => {
+    secStart.push(offset);
+    s.blocks.forEach((b) => {
+      const el = document.querySelector(`[data-say="${b.id}"]`);
+      if (el) blocks.push({ ...b, sec: si, el, at: offset + b.s });
+    });
+    offset += s.dur;
+  });
+  const totalDur = offset;
+  const indexById = new Map(blocks.map((b, i) => [b.id, i]));
+  const firstOfSec = (si) => blocks.findIndex((b) => b.sec === si);
+
+  const audio = new Audio();
+  audio.preload = 'auto';
+  let loaded = -1, cur = -1, follow = true, followLocked = false, userIntent = 0, progUntil = 0;
+  const prefs = Object.assign({ rate: 1, skipc: false }, JSON.parse(localStorage.getItem(PREF_KEY) || '{}'));
+
+  // ---- controls setup
+  D.sections.forEach((s, i) => { const o = document.createElement('option'); o.value = i; o.textContent = s.title; $('say-sec').append(o); });
+  [0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.5, 1.75, 2].forEach((r) => { const o = document.createElement('option'); o.value = r; o.textContent = r + '×'; $('say-rate').append(o); });
+  $('say-rate').value = prefs.rate; $('say-skipc').checked = prefs.skipc;
+  if (!D.hasComments) { $('say-skipc-label').style.display = 'none'; prefs.skipc = false; }
+  const savePrefs = () => localStorage.setItem(PREF_KEY, JSON.stringify(prefs));
+
+  const fmt = (t) => { t = Math.max(0, Math.floor(t)); const h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, s = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); };
+
+  function load(si) {
+    if (loaded !== si) { audio.src = D.sections[si].file; loaded = si; audio.playbackRate = prefs.rate; }
+  }
+  function whenReady(fn) { if (audio.readyState >= 1) fn(); else audio.addEventListener('loadedmetadata', fn, { once: true }); }
+
+  function seek(i, play) {
+    if (i < 0 || i >= blocks.length) return;
+    if (prefs.skipc && blocks[i].k === 'comment') { const j = nextNonComment(i, 1); if (j >= 0) i = j; }
+    const b = blocks[i];
+    const wasPlaying = !audio.paused;
+    load(b.sec);
+    whenReady(() => { audio.playbackRate = prefs.rate; audio.currentTime = b.s + 0.01; if (play ?? wasPlaying) audio.play(); });
+    setCur(i, true);
+  }
+  function nextNonComment(i, dir) { while (i >= 0 && i < blocks.length && blocks[i].k === 'comment') i += dir; return i >= 0 && i < blocks.length ? i : -1; }
+
+  function openAncestors(el) { for (let p = el.parentElement; p; p = p.parentElement) if (p.tagName === 'DETAILS') p.open = true; }
+  // The visible area is the window minus the player bar at the bottom.
+  const visible = () => ({ top: 0, bottom: window.innerHeight - $('say-bar').offsetHeight });
+  function inView(el) { const r = el.getBoundingClientRect(), v = visible(); return r.bottom > v.top + 24 && r.top < v.bottom - 24; }
+  function centerOn(el) {
+    const r = el.getBoundingClientRect(), v = visible(), h = v.bottom - v.top;
+    // A block taller than most of the view is aligned by its top, so its first line shows.
+    const dy = r.height > h * 0.8 ? r.top - v.top - 40 : r.top + r.height / 2 - (v.top + h / 2);
+    if (Math.abs(dy) < 4) return;
+    progUntil = Date.now() + 1200;
+    window.scrollTo({ top: window.scrollY + dy, behavior: 'smooth' });
+  }
+
+  function setCur(i, force) {
+    if (i === cur && !force) return;
+    if (cur >= 0) blocks[cur].el.classList.remove('say-now');
+    cur = i;
+    const b = blocks[i];
+    b.el.classList.add('say-now');
+    openAncestors(b.el);
+    if (!follow && !followLocked && inView(b.el)) setFollow(true);
+    else if (follow) centerOn(b.el);
+    $('say-sec').value = b.sec;
+    localStorage.setItem(POS_KEY, b.id);
+    status();
+  }
+
+  function status() {
+    if (cur < 0) return;
+    const b = blocks[cur];
+    const t = loaded === b.sec ? secStart[b.sec] + audio.currentTime : b.at;
+    $('say-status').textContent = `¶ ${cur + 1}/${blocks.length} · ${fmt(t)} / ${fmt(totalDur)} · ${fmt((totalDur - t) / prefs.rate)} left`;
+    $('say-progress').firstElementChild.style.width = (100 * t / totalDur) + '%';
+  }
+
+  audio.addEventListener('timeupdate', () => {
+    const t = audio.currentTime;
+    let i = -1;
+    for (let j = 0; j < blocks.length; j++) { const b = blocks[j]; if (b.sec !== loaded) { if (b.sec > loaded) break; continue; } if (b.s <= t + 0.05) i = j; else break; }
+    if (i >= 0) {
+      if (prefs.skipc && blocks[i].k === 'comment' && !audio.paused) { const j = nextNonComment(i, 1); if (j >= 0) { seek(j, true); return; } }
+      setCur(i);
+    }
+    status();
+  });
+  audio.addEventListener('ended', () => { const n = firstOfSec(loaded + 1); if (n >= 0) seek(n, true); else $('say-play').textContent = '▶'; });
+  audio.addEventListener('play', () => { $('say-play').textContent = '⏸'; });
+  audio.addEventListener('pause', () => { $('say-play').textContent = '▶'; });
+
+  function toggle() { if (cur < 0) seek(0, true); else if (audio.paused) { if (loaded !== blocks[cur].sec) seek(cur, true); else audio.play(); } else audio.pause(); }
+  const step = (d) => seek(Math.min(blocks.length - 1, Math.max(0, cur + d)));
+  const stepSec = (d) => { const s = Math.min(D.sections.length - 1, Math.max(0, (cur < 0 ? 0 : blocks[cur].sec) + d)); seek(firstOfSec(s)); };
+  function setRate(r) { prefs.rate = r; audio.playbackRate = r; $('say-rate').value = r; savePrefs(); status(); }
+  // manual: the Follow button or F. Turning follow off by hand stops it resuming on its own.
+  // center: false when follow resumes because the reader scrolled the highlight back into view.
+  function setFollow(on, { manual = false, center = on } = {}) {
+    follow = on;
+    followLocked = !on && manual;
+    $('say-follow').classList.toggle('on', on);
+    if (center && cur >= 0) centerOn(blocks[cur].el);
+  }
+
+  $('say-play').onclick = toggle;
+  $('say-prev').onclick = () => step(-1);
+  $('say-next').onclick = () => step(1);
+  $('say-prevsec').onclick = () => stepSec(-1);
+  $('say-nextsec').onclick = () => stepSec(1);
+  $('say-sec').onchange = (e) => seek(firstOfSec(+e.target.value));
+  $('say-rate').onchange = (e) => setRate(+e.target.value);
+  $('say-skipc').onchange = (e) => { prefs.skipc = e.target.checked; savePrefs(); };
+  $('say-follow').onclick = () => setFollow(!follow, { manual: true });
+  $('say-helpbtn').onclick = () => { const h = $('say-help'); h.style.display = h.style.display === 'block' ? 'none' : 'block'; };
+  $('say-progress').onclick = (e) => {
+    const t = totalDur * e.offsetX / e.currentTarget.clientWidth;
+    let i = 0; for (let j = 0; j < blocks.length; j++) if (blocks[j].at <= t) i = j; seek(i);
+  };
+  // A scroll is the reader's when it follows a wheel, touch or scroll key, or when no
+  // scroll of ours is running (a scrollbar drag). The reader scrolling the highlight
+  // out of view stops follow; scrolling it back into view resumes it.
+  const markIntent = () => { userIntent = Date.now(); };
+  ['wheel', 'touchmove'].forEach((ev) => window.addEventListener(ev, markIntent, { passive: true }));
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key) && !e.target.closest('textarea, input, select')) markIntent();
+  }, true);
+  window.addEventListener('scrollend', () => { progUntil = 0; });
+  window.addEventListener('scroll', () => {
+    const now = Date.now();
+    if (cur < 0 || followLocked || (now < progUntil && now - userIntent > 600)) return;
+    const seen = inView(blocks[cur].el);
+    if (follow && !seen) setFollow(false);
+    else if (!follow && seen) setFollow(true, { center: false });
+  }, { passive: true });
+
+  document.addEventListener('dblclick', (e) => {
+    if (e.target.closest('#say-bar, .say-composer, .say-mynote, a')) return;
+    const el = e.target.closest('[data-say]');
+    if (el && indexById.has(el.dataset.say)) { window.getSelection()?.removeAllRanges(); seek(indexById.get(el.dataset.say), true); }
+  });
+
+  // ---- my notes
+  let notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}');
+  const saveNotes = () => { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); renderNotes(); };
+  const count = () => Object.values(notes).reduce((n, a) => n + a.length, 0);
+
+  function placeAfter(el, node) {
+    if (el.tagName === 'TR') {
+      const tr = document.createElement('tr'); tr.className = 'say-ui-row';
+      const td = document.createElement('td'); td.colSpan = el.children.length || 1; td.append(node); tr.append(td);
+      let a = el; while (a.nextElementSibling && a.nextElementSibling.matches('.say-inserted-row, .say-ui-row')) a = a.nextElementSibling;
+      a.after(tr);
+    } else if (el.tagName === 'LI') {
+      const kids = [...el.children].filter((c) => c.matches('.say-comment, .say-mynote, .say-composer'));
+      const nested = [...el.children].find((c) => c.tagName === 'UL' || c.tagName === 'OL');
+      if (kids.length) kids[kids.length - 1].after(node); else if (nested) nested.before(node); else el.append(node);
+    } else {
+      let a = el; while (a.nextElementSibling && a.nextElementSibling.matches('.say-comment, .say-mynote, .say-composer')) a = a.nextElementSibling;
+      a.after(node);
+    }
+  }
+
+  function renderNotes() {
+    document.querySelectorAll('.say-mynote').forEach((n) => { const row = n.closest('.say-ui-row'); (row || n).remove(); });
+    for (const [id, list] of Object.entries(notes)) {
+      const i = indexById.get(id); if (i === undefined) continue;
+      list.forEach((note, k) => {
+        const d = document.createElement('div'); d.className = 'say-mynote';
+        const head = document.createElement('div'); head.className = 'say-mynote-head';
+        head.textContent = '🗒️ My comment · ' + new Date(note.ts).toLocaleString();
+        const ed = document.createElement('button'); ed.textContent = 'edit'; ed.onclick = () => compose(i, k);
+        const del = document.createElement('button'); del.textContent = 'delete';
+        del.onclick = () => { if (confirm('Delete this comment?')) { list.splice(k, 1); if (!list.length) delete notes[id]; saveNotes(); } };
+        head.append(ed, del);
+        const body = document.createElement('div'); body.textContent = note.text;
+        d.append(head, body);
+        placeAfter(blocks[i].el, d);
+      });
+    }
+    $('say-export').textContent = `Export (${count()})`;
+  }
+
+  let composer = null;
+  function closeComposer() { if (composer) { const row = composer.closest('.say-ui-row'); (row || composer).remove(); composer = null; } }
+  function compose(i, editIdx) {
+    if (i < 0) i = 0;
+    closeComposer();
+    audio.pause();
+    const b = blocks[i];
+    const box = document.createElement('div'); box.className = 'say-composer';
+    const ta = document.createElement('textarea');
+    ta.placeholder = 'My comment on this paragraph…';
+    if (editIdx !== undefined) ta.value = notes[b.id][editIdx].text;
+    const row = document.createElement('div'); row.className = 'row';
+    const save = document.createElement('button'); save.textContent = 'Save';
+    const saveGo = document.createElement('button'); saveGo.textContent = 'Save & resume';
+    const cancel = document.createElement('button'); cancel.textContent = 'Cancel';
+    const hint = document.createElement('span'); hint.className = 'hint'; hint.textContent = '⌘+Enter save & resume · Esc cancel';
+    row.append(save, saveGo, cancel, hint);
+    box.append(ta, row);
+    const commit = (resume) => {
+      const text = ta.value.trim();
+      if (editIdx !== undefined) { if (text) notes[b.id][editIdx].text = text; else { notes[b.id].splice(editIdx, 1); if (!notes[b.id].length) delete notes[b.id]; } }
+      else if (text) (notes[b.id] ||= []).push({ text, ts: Date.now() });
+      closeComposer(); saveNotes();
+      if (resume) { if (loaded === b.sec && cur === i) audio.play(); else seek(i, true); }
+    };
+    save.onclick = () => commit(false);
+    saveGo.onclick = () => commit(true);
+    cancel.onclick = closeComposer;
+    ta.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); commit(true); }
+      if (e.key === 'Escape') { e.preventDefault(); closeComposer(); }
+      e.stopPropagation();
+    });
+    composer = box;
+    placeAfter(b.el, box);
+    progUntil = Date.now() + 1200;
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => ta.focus(), 50);
+  }
+  $('say-comment').onclick = () => compose(cur);
+
+  function exportNotes() {
+    if (!count()) { alert('No comments yet. Press C while listening to add one.'); return; }
+    const lines = [`# My comments on ${D.title}`, '', `Exported ${new Date().toLocaleString()}`, ''];
+    let lastSec = -1;
+    blocks.forEach((b) => {
+      const list = notes[b.id]; if (!list) return;
+      if (b.sec !== lastSec) { lines.push(`## ${D.sections[b.sec].title}`, ''); lastSec = b.sec; }
+      const clone = b.el.cloneNode(true);
+      clone.querySelectorAll('.say-comment, .say-mynote, .say-composer, ul, ol').forEach((n) => n.remove());
+      let quote = clone.innerText.replace(/\s+/g, ' ').trim();
+      if (b.k === 'comment') quote = b.el.innerText.replace(/\s+/g, ' ').trim();
+      if (quote.length > 300) quote = quote.slice(0, 300) + '…';
+      lines.push(`> ${quote}`, '');
+      list.forEach((n) => lines.push(n.text, ''));
+    });
+    const md = lines.join('\n');
+    navigator.clipboard?.writeText(md).catch(() => {});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([md], { type: 'text/markdown' }));
+    a.download = `my-comments-${D.slug}.md`;
+    a.click();
+  }
+  $('say-export').onclick = exportNotes;
+
+  // ---- keys
+  document.addEventListener('keydown', (e) => {
+    if (e.target.closest('textarea, input, select') || e.metaKey || e.ctrlKey || e.altKey) return;
+    const k = e.key;
+    if (k === ' ') { e.preventDefault(); toggle(); }
+    else if (k === 'ArrowRight') { e.preventDefault(); e.shiftKey ? stepSec(1) : step(1); }
+    else if (k === 'ArrowLeft') { e.preventDefault(); e.shiftKey ? stepSec(-1) : step(-1); }
+    else if (k === 'c' || k === 'C') { e.preventDefault(); compose(cur); }
+    else if (k === 'f' || k === 'F') setFollow(true, { manual: true });
+    else if (k === ']') { const r = [...$('say-rate').options].map((o) => +o.value); setRate(r[Math.min(r.length - 1, r.indexOf(prefs.rate) + 1)] ?? 1); }
+    else if (k === '[') { const r = [...$('say-rate').options].map((o) => +o.value); setRate(r[Math.max(0, r.indexOf(prefs.rate) - 1)] ?? 1); }
+    else if (k === '?') $('say-helpbtn').click();
+  });
+
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({ title: D.title, artist: 'Narration' });
+    navigator.mediaSession.setActionHandler('play', toggle);
+    navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+    navigator.mediaSession.setActionHandler('nexttrack', () => step(1));
+    navigator.mediaSession.setActionHandler('previoustrack', () => step(-1));
+  }
+
+  renderNotes();
+  const saved = indexById.get(localStorage.getItem(POS_KEY));
+  if (saved !== undefined) { seek(saved, false); } else { setCur(0, false); load(0); }
+})();
+</script>

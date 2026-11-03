@@ -1,0 +1,6 @@
+kokoro==0.9.4
+soundfile
+beautifulsoup4
+markdown-it-py
+mammoth
+pymupdf4llm

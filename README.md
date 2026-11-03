@@ -57,7 +57,7 @@ The skills shell out to a few tools; each `SKILL.md` names what it needs under P
 
 - [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) on `PATH` (`brew install yt-dlp`). No YouTube API key.
 - Node 18 or newer for most bundled scripts; `t3-handoff` needs Node 24 or newer and a running T3 Code installation (0.0.45 or 0.0.46 and later); `explain-pr` needs Node 24 or newer, `git` and `gh`.
-- `ffmpeg` and `python3` for the media skills. `tts-voice` needs a local Chatterbox install; `browser-tour` needs the Claude-in-Chrome extension; `video-lineup` needs Node 24 or newer, `git`, `npm`, `uv`, Google Chrome, a running T3 Code and `t3-handoff`.
+- `ffmpeg` and `python3` for the media skills. `tts-voice` needs a local Chatterbox install; `narrate-doc` needs a Python 3.12 environment with Kokoro (its `requirements.txt`); `browser-tour` needs the Claude-in-Chrome extension; `video-lineup` needs Node 24 or newer, `git`, `npm`, `uv`, Google Chrome, a running T3 Code and `t3-handoff`.
 
 ## Reference
 
@@ -94,6 +94,7 @@ Producing audio, narrated walkthroughs and videos.
 
 **Model-invoked**
 
+- **[narrate-doc](./skills/media/narrate-doc/SKILL.md)**: Turn a document (Markdown, HTML or a Notion export, Word, PDF) into a page that reads itself aloud with local Kokoro TTS, highlights the paragraph being read, reads the document's comments in other voices, and lets you pause and add your own comments, exported as Markdown. Docs: [narrate-doc](./docs/media/narrate-doc.md).
 - **[storytime](./skills/media/storytime/SKILL.md)**: Render a story as a multi-voice MP3: tag the prose by speaker, cast a local voice per character, stitch with ffmpeg. Docs: [storytime](./docs/media/storytime.md).
 - **[browser-tour](./skills/media/browser-tour/SKILL.md)**: Drive Claude-in-Chrome through a narrated, pausing tour: research, product wizard, plan narration, or post-implementation demo. Docs: [browser-tour](./docs/media/browser-tour.md).
 - **[tts-voice](./skills/media/tts-voice/SKILL.md)**: Free local text-to-speech with voice cloning, Chatterbox under the hood. Needs a local Chatterbox install. Docs: [tts-voice](./docs/media/tts-voice.md).

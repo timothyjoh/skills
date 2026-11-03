@@ -1,0 +1,3 @@
+interface:
+  display_name: "Narrate Doc"
+  short_description: "Narrated read-along page for any document"

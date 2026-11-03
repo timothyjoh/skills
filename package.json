@@ -16,7 +16,8 @@
     "test:t3-handoff": "node --test skills/development/t3-handoff/scripts/tests/*.test.mjs",
     "test:explain-pr": "node --test skills/development/explain-pr/scripts/tests/*.test.mjs",
     "test:knowledge": "node --test scripts/tests/generated-skill-navigation.test.mjs skills/knowledge/playlist-to-skill/scripts/pts_pipeline.test.js",
-    "test:video-lineup": "node --test skills/media/video-lineup/scripts/tests/*.test.mjs"
+    "test:video-lineup": "node --test skills/media/video-lineup/scripts/tests/*.test.mjs",
+    "test:narrate-doc": "\"${NARRATE_DOC_PYTHON:-$HOME/wrk/opc/kokoro-tts/.venv/bin/python}\" -m unittest discover -s skills/media/narrate-doc/scripts/tests"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.7.0",
