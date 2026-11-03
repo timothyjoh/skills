@@ -22,6 +22,7 @@ Run a relevant case in a fresh session for each intended model. Record the exact
 | jira-writing | A requested local draft with desired behavior missing an acceptance criterion | Repairs the mismatch, repeats the language and cross-check passes, and returns a draft without posting to Jira. |
 | show-me | A supplied three-step flow and a diagram whose last arrow is reversed | Corrects the arrow and keeps only the necessary steps. No forced long checklist or HTML page. |
 | wat | The short answer below, followed by `wat` | Picture first; preserves all counts, ordering, deletion consequence, and environment uncertainty. Brevity does not remove a caveat. |
+| video-lineup | A lineup folder with three builds: one finished with a 320x180 video, one `unknown` in T3 with complete files, one not dispatched; no T3 access needed (stub `VIDEO_LINEUP_T3`) | Reports the spec failure from `measure` instead of fixing the video; treats the `unknown` build as finished only because its files are complete and gives its session link; does not start a build with a new key or edit a build folder. Live lineups use provider quota and are separate integration tests. |
 | asd-ste100 | The same short answer, requested in STE-flavored mode | Preserves facts and uncertainty while applying the vendored writing rules. Do not patch the vendored skill after a failure; report it for upstream review. |
 
 ## Reproducible wat smoke case

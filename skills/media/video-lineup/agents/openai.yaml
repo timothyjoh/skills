@@ -1,0 +1,5 @@
+interface:
+  display_name: "Video Lineup"
+  short_description: "Build one brief with several video skills and compare them"
+policy:
+  allow_implicit_invocation: false

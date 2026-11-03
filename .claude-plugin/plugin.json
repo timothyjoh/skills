@@ -1,7 +1,7 @@
 {
   "name": "timothyjoh-skills",
   "version": "0.8.0",
-  "description": "Timothy Johnson's agent skills: turn channels and playlists into knowledge, explain ideas visually, produce narrated audio, delegate work to T3 Code project agents, and explain PRs as checked briefs.",
+  "description": "Timothy Johnson's agent skills: turn channels and playlists into knowledge, explain ideas visually, produce narrated audio, build one video brief with several video skills side by side, delegate work to T3 Code project agents, and explain PRs as checked briefs.",
   "author": {
     "name": "Timothy Johnson",
     "url": "https://github.com/timothyjoh"
@@ -21,6 +21,8 @@
     "media",
     "browser-tour",
     "tts-voice",
+    "video",
+    "video-lineup",
     "development",
     "t3-code",
     "t3-handoff",
@@ -38,6 +40,7 @@
     "./skills/media/storytime",
     "./skills/media/browser-tour",
     "./skills/media/tts-voice",
+    "./skills/media/video-lineup",
     "./skills/development/t3-handoff",
     "./skills/development/t3-report",
     "./skills/development/explain-pr"

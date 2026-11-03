@@ -1,0 +1,184 @@
+{
+  "version": 1,
+  "qaTool": {
+    "name": "video-director",
+    "repo": "https://github.com/win4r/video-director",
+    "commit": "4747e5c153509ef7f8f7fd1a0aad6acfda36280d",
+    "script": "video-director/scripts/qa_video.py"
+  },
+  "builders": [
+    {
+      "name": "huashu-motion",
+      "kind": "Launch film: kinetic type, original score, no voice by default",
+      "author": "Huashu (alchaincyf)",
+      "repo": "https://github.com/alchaincyf/huashu-motion",
+      "commit": "52467f99c602b76ba86d511d37acdfe93fa1e16e",
+      "license": "MIT",
+      "vendor": "huashu-motion",
+      "links": {
+        "huashu-motion": "skills/huashu-motion"
+      },
+      "port": 6610,
+      "setup": [],
+      "scanAllow": []
+    },
+    {
+      "name": "take-one",
+      "kind": "Story-driven launch film with music and sound effects, plus POSTS.md",
+      "author": "talsiach",
+      "repo": "https://github.com/talsiach/take-one",
+      "commit": "8be349cb7133cd32dd3bc4b91e3a36e476511a55",
+      "license": "MIT",
+      "vendor": "take-one",
+      "links": {
+        "take-one": "."
+      },
+      "port": 6620,
+      "setup": [],
+      "scanAllow": []
+    },
+    {
+      "name": "explainroo",
+      "kind": "Narrated explainer with word-synced scenes, subtitles and a cover",
+      "author": "vincentsch",
+      "repo": "https://github.com/vincentsch/explainroo",
+      "commit": "e95232c8d535ed2aa390e7b1caee0d1326dd9e83",
+      "license": "MIT",
+      "vendor": "explainroo",
+      "links": {
+        "explainroo": "skills/explainroo"
+      },
+      "port": 6630,
+      "audit": [
+        {
+          "kind": "npm",
+          "cwd": "."
+        }
+      ],
+      "setup": [
+        {
+          "cwd": "vendor/explainroo",
+          "run": "npm install --no-fund --no-audit"
+        },
+        {
+          "cwd": "vendor/explainroo",
+          "run": "node bin/explainroo.js doctor --fetch",
+          "allowFail": true
+        }
+      ],
+      "scanAllow": []
+    },
+    {
+      "name": "video-director",
+      "kind": "Directed explainer: the agent writes the renderer under the skill's rules and QA",
+      "author": "win4r",
+      "repo": "https://github.com/win4r/video-director",
+      "commit": "4747e5c153509ef7f8f7fd1a0aad6acfda36280d",
+      "license": "MIT",
+      "vendor": "video-director",
+      "links": {
+        "video-director": "video-director"
+      },
+      "port": 6640,
+      "setup": [],
+      "scanAllow": []
+    },
+    {
+      "name": "argo",
+      "kind": "Demo video recorded from a web app by Playwright, with Kokoro voiceover and overlays",
+      "author": "shreyaskarnik",
+      "repo": "https://github.com/shreyaskarnik/argo",
+      "commit": "5f715496522c4e682f4dc4aeffae5528e866ad5e",
+      "license": "MIT",
+      "vendor": "argo",
+      "links": {
+        "argo-guide": "skills/argo-guide"
+      },
+      "port": 6650,
+      "audit": [
+        {
+          "kind": "npm",
+          "packages": "@argo-video/cli@latest kokoro-js@1"
+        }
+      ],
+      "setup": [
+        {
+          "cwd": ".",
+          "run": "npm init -y"
+        },
+        {
+          "cwd": ".",
+          "run": "npm install -D --no-fund --no-audit @argo-video/cli@latest kokoro-js@1"
+        },
+        {
+          "cwd": ".",
+          "run": "npx playwright install chromium"
+        },
+        {
+          "cwd": ".",
+          "run": "npx argo doctor",
+          "allowFail": true
+        }
+      ],
+      "scanAllow": []
+    },
+    {
+      "name": "control",
+      "kind": "No video skill: HTML scenes, Playwright capture, ffmpeg and tts-voice narration",
+      "author": "",
+      "repo": "",
+      "commit": "",
+      "license": "",
+      "vendor": "",
+      "links": {},
+      "port": 6660,
+      "setup": []
+    },
+    {
+      "name": "earshot-pass",
+      "kind": "Sound design pass by earshot on the control video",
+      "author": "Leonxlnx",
+      "repo": "https://github.com/Leonxlnx/earshot",
+      "commit": "591fa3e028032e6dce56620a20e932e35667e8d8",
+      "license": "MIT",
+      "vendor": "earshot",
+      "links": {
+        "earshot": "skills/earshot",
+        "real-sound": "skills/real-sound"
+      },
+      "port": 6670,
+      "after": "control",
+      "env": {
+        "EARSHOT_HOME": "{{earshotHome}}"
+      },
+      "audit": [
+        {
+          "kind": "python",
+          "cwd": ".",
+          "extras": [
+            "mcp"
+          ]
+        }
+      ],
+      "setup": [
+        {
+          "cwd": "vendor/earshot",
+          "run": "uv venv --allow-existing --python 3.12 .venv"
+        },
+        {
+          "cwd": "vendor/earshot",
+          "run": "uv pip install --python .venv/bin/python torch --index-url https://download.pytorch.org/whl/cpu"
+        },
+        {
+          "cwd": "vendor/earshot",
+          "run": "uv pip install --python .venv/bin/python -e '.[mcp]'"
+        },
+        {
+          "cwd": "vendor/earshot",
+          "run": ".venv/bin/python -m earshot doctor --fetch"
+        }
+      ],
+      "scanAllow": []
+    }
+  ]
+}

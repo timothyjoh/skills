@@ -1,6 +1,12 @@
 # Media
 
-Producing audio and narrated walkthroughs: text-to-speech engines, multi-voice stories, browser tours.
+Producing audio, narrated walkthroughs and videos: text-to-speech engines, multi-voice stories, browser tours, side-by-side video builds.
+
+## User-invoked
+
+Reachable only when you type them; they orchestrate.
+
+- **[video-lineup](./video-lineup/SKILL.md)**: Build one video brief with several video skills at once (huashu-motion, take-one, explainroo, video-director, argo, a no-skill baseline and an earshot sound pass), each in its own T3 Code session, then measure and compare the outputs on one page. Depends on `t3-handoff` in the development bucket; the baseline uses `tts-voice` beside it.
 
 ## Model-invoked
 

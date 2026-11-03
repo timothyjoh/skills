@@ -57,7 +57,7 @@ The skills shell out to a few tools; each `SKILL.md` names what it needs under P
 
 - [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) on `PATH` (`brew install yt-dlp`). No YouTube API key.
 - Node 18 or newer for most bundled scripts; `t3-handoff` needs Node 24 or newer and a running T3 Code installation (0.0.45 or 0.0.46 and later); `explain-pr` needs Node 24 or newer, `git` and `gh`.
-- `ffmpeg` and `python3` for the media skills. `tts-voice` needs a local Chatterbox install; `browser-tour` needs the Claude-in-Chrome extension.
+- `ffmpeg` and `python3` for the media skills. `tts-voice` needs a local Chatterbox install; `browser-tour` needs the Claude-in-Chrome extension; `video-lineup` needs Node 24 or newer, `git`, `npm`, `uv`, Google Chrome, a running T3 Code and `t3-handoff`.
 
 ## Reference
 
@@ -86,7 +86,11 @@ Explaining things: to a reader who is lost, or to one who needs a picture.
 
 ### Media
 
-Producing audio and narrated walkthroughs.
+Producing audio, narrated walkthroughs and videos.
+
+**User-invoked**
+
+- **[video-lineup](./skills/media/video-lineup/SKILL.md)**: Build one video brief with several video skills at once, each in its own T3 Code session, then measure every output the same way and compare them on one local page. Builders: [huashu-motion](https://github.com/alchaincyf/huashu-motion) (Huashu), [take-one](https://github.com/talsiach/take-one) (talsiach), [explainroo](https://github.com/vincentsch/explainroo) (vincentsch), [video-director](https://github.com/win4r/video-director) (win4r), [argo](https://github.com/shreyaskarnik/argo) (shreyaskarnik) and [earshot](https://github.com/Leonxlnx/earshot) (Leonxlnx), all MIT, fetched at their latest security-checked commits on every run, plus a no-skill baseline. Docs: [video-lineup](./docs/media/video-lineup.md).
 
 **Model-invoked**
 

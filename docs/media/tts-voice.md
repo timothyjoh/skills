@@ -4,7 +4,7 @@
 
 ## When to reach for it
 
-Type `/tts-voice`, or the agent reaches for it when you want narration audio, a character voice, or text read aloud. [storytime](./storytime.md) and [browser-tour](./browser-tour.md) both use it.
+Type `/tts-voice`, or the agent reaches for it when you want narration audio, a character voice, or text read aloud. [storytime](./storytime.md) and [browser-tour](./browser-tour.md) both use it, and the baseline build in [video-lineup](./video-lineup.md) narrates with it.
 
 ## Prerequisites
 
