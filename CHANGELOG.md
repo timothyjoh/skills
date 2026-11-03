@@ -1,5 +1,44 @@
 # timothyjoh-skills
 
+## 0.9.0
+
+### Minor Changes
+
+- [`302c035`](https://github.com/timothyjoh/skills/commit/302c0358d07d1d90cc80a5156656a534ff973e5f) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Add `narrate-doc`, a model-invoked media skill: turn Markdown, HTML (Notion exports included), Word or PDF into a narrated page.
+
+  - Local Kokoro TTS reads the document and highlights each paragraph as it is read. The audio is one MP3 per section, so a long document can be heard before it finishes rendering.
+  - Comments in the source (Notion inline comments, Word comments, PDF annotations, Markdown CriticMarkup) are placed under their text and read in other voices.
+  - The listener pauses, adds comments, and exports them as Markdown. The page works from `file://`.
+  - Follow mode keeps the paragraph being read centered. It stops when the listener scrolls the highlight out of view and resumes when the highlight is back in view. `--update-player` refreshes the player in pages already made.
+  - Templates for the reading page and the player ship in `templates/`, for reuse in new reports.
+
+- [`b4c8a69`](https://github.com/timothyjoh/skills/commit/b4c8a69fcecc8a5de30073cf505c131d2319f01a) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Rename `delegate-t3-agent` to `t3-handoff` and add `t3-report`.
+
+  - t3-handoff works with T3 Code orchestration protocol 2 (0.0.46 and later) as well as protocol 1 (0.0.45 and earlier). It reads the protocol from the running server and uses the matching adapter.
+  - Delegated sessions are named `👋 <task name>`. `--title` is required, and `rename` changes it later. Old sessions were named after the request key.
+  - New `t3-report` skill for the delegated agent: short progress reports at agreed points, following the coordinator's `--brief`. Reports go as a `cat <<'T3_REPORT'` command, so they arrive from Claude and Codex children alike.
+  - The coordinator follows progress with `watch --follow` (one line per report), with `wait` (returns on each new report), or, for a T3 parent, with posts into the parent conversation for each report.
+  - `--effort` uses the option name each model advertises (`effort` for Claude, `reasoningEffort` for Codex). Before, Claude children got the Codex name.
+
+- [`9226642`](https://github.com/timothyjoh/skills/commit/92266421ffcbaefa3528ebb9a48395c30ade4724) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Add `video-lineup`, a user-invoked media skill: build one video brief with several video skills at once and compare the results.
+
+  - Builders: huashu-motion, take-one, explainroo, video-director, argo, a no-skill baseline, and an earshot sound pass on the baseline. Each run fetches every builder's latest commit from its GitHub repo and clones it into its own build folder, with its installs done up front.
+  - `upstream` checks every builder before a lineup: eliminates archived or stale repos, scans prompts and code for injection and dangerous patterns, audits dependencies without running install scripts, and sends new commits to a fresh agent review recorded with `vet`. `init` builds only builders that passed.
+  - Each build runs in its own T3 Code project and session through `t3-handoff`, unattended, with one shared set of rules and a run contract.
+  - `scripts/lineup.mjs` checks the tools, sets up the lineup, registers projects, dispatches, follows progress, measures every output (spec, loudness, contact sheet, transcript, video-director's QA script) and writes a side-by-side page that works from `file://`.
+
+### Patch Changes
+
+- [`b4c8a69`](https://github.com/timothyjoh/skills/commit/b4c8a69fcecc8a5de30073cf505c131d2319f01a) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Use the ASD-STE100 skill in STE-flavored mode for explain-pr briefs and group summaries. Preserve quoted requirements, code references and uncertainty.
+
+- [`b4c8a69`](https://github.com/timothyjoh/skills/commit/b4c8a69fcecc8a5de30073cf505c131d2319f01a) Thanks [@timothyjoh](https://github.com/timothyjoh)! - t3-handoff (formerly delegate-t3-agent): issue a short-lived T3 credential automatically when `T3_DELEGATE_TOKEN` is unset. The helper finds the T3 CLI through `T3_BIN`, `PATH`, or the running T3 server's own binary, so agents no longer stop on a missing token.
+
+- [`b4c8a69`](https://github.com/timothyjoh/skills/commit/b4c8a69fcecc8a5de30073cf505c131d2319f01a) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Add a compact Verification and rollout section to explain-pr briefs. Separate code-reference checks from runtime evidence, record test provenance and unexecuted checks, and describe affected users and rollback consequences.
+
+- [`b4c8a69`](https://github.com/timothyjoh/skills/commit/b4c8a69fcecc8a5de30073cf505c131d2319f01a) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Improve skill prerequisites, progress tracking, and repair-and-recheck instructions. Keep writing choices flexible while preserving facts, schemas, and source coverage. Add direct-reference and long-page contents validation to both knowledge generators, with regression tests. Document model evaluation cases and preserve the vendored ASD-STE100 source.
+
+  Set the intended evaluation targets to Claude Haiku, Sonnet, Opus, and Codex, separately from verified model results.
+
 ## 0.8.0
 
 ### Minor Changes
