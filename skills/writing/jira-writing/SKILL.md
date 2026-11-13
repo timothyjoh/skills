@@ -11,7 +11,7 @@ The full rule set is in [references/rules.md](./references/rules.md). The templa
 
 ## Prerequisites
 
-`show-me` and `asd-ste100` must be installed for the visual and language passes. If the harness has no Skill tool, read their installed `SKILL.md` files and follow them. Writing a local draft needs no Jira connection; publishing needs the Atlassian tools and access to the destination project. If a dependency is missing, identify it and retain the draft with the unfinished pass stated.
+`show-me` and `asd-ste100` must be installed for the visual and language passes. If the harness has no Skill tool, read their installed `SKILL.md` files and follow them. Writing a local draft needs no Jira connection; publishing needs the `twg` CLI (preferred) or the Atlassian MCP tools, and access to the destination project. If a dependency is missing, identify it and retain the draft with the unfinished pass stated.
 
 ## Budget
 
@@ -91,7 +91,17 @@ Correct each failed pair, then repeat the cross-check on the revised draft. Rech
 
 Write the body to a file first, so backticks survive.
 
-Through the Atlassian MCP tools, pass `contentFormat: "markdown"` and the file contents as `description`. Set project-specific fields in one `additional_fields` object. Field IDs, sprint IDs, estimate scales and post-create transitions are project conventions, not part of this skill. Look them up in the project's docs or memory before the call. Do not guess them.
+Use the `twg` CLI when it is installed and logged in (`twg env`). Use the Atlassian MCP tools only when it is not. Either way, send the body as Markdown. With `twg`, set project-specific fields with `--field key=value` or one `--fields-json` object; with MCP, use one `additional_fields` object. Field IDs, sprint IDs, estimate scales and post-create transitions are project conventions, not part of this skill. Look them up in the project's docs or memory before the call. Do not guess them.
+
+```text
+twg jira workitem create --space <PROJ> --type Bug --summary "<s>" \
+    --description "$(cat <file>)" --description-format markdown --fields-json '<json>'
+twg jira workitem update --id <KEY> \
+    --description "$(cat <file>)" --description-format markdown
+twg jira workitem get <KEY>
+```
+
+MCP fallback:
 
 ```text
 createJiraIssue  cloudId, projectKey, issueTypeName, summary,
@@ -101,7 +111,7 @@ editJiraIssue    cloudId, issueIdOrKey, contentFormat: "markdown",
                  fields: { description: <file> }
 ```
 
-Read the card back with `getJiraIssue` and confirm the fences and the table survived. If a fence collapsed, switch that block to plain indented text, edit again, and read back again. If two repairs fail, preserve the local body and report the remaining rendering defect. Publish only when creating or updating the card is within the user's request; a drafting request ends with the local body.
+Read the card back (`twg jira workitem get <KEY>`, or `getJiraIssue`) and confirm the fences and the table survived. If a fence collapsed, switch that block to plain indented text, edit again, and read back again. If two repairs fail, preserve the local body and report the remaining rendering defect. Publish only when creating or updating the card is within the user's request; a drafting request ends with the local body.
 
 ## Example: a bug card Summary and Root Cause
 

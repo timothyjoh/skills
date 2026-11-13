@@ -68,7 +68,7 @@ Both check their own output. Go on to step 3 while they run.
 
 ### 3. Gather intent and read the diff
 
-- Requirements come from the user's request, the PR title and body, and the Jira card the PR names. Read the card with the Atlassian tools when they are available.
+- Requirements come from the user's request, the PR title and body, and the Jira card the PR names. Read the card with `twg jira workitem get <KEY> --comments` when `twg` is installed; otherwise use the Atlassian MCP tools when they are available.
 - Read the whole diff: `git -C <repo> diff <base> <head>`. For a large diff, read it file by file.
 - Gather existing test results, CI runs, logs, screenshots, and rollout notes relevant to the changed behavior. Prefer supplied evidence. Record each result's source, tested commit, environment, and limits where known. Reading a test is not running it. Keep new checks within the authorized review scope; missing evidence can be reported without a new test run or live action.
 

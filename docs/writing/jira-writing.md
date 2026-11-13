@@ -10,7 +10,7 @@ For a pull request body, use a PR description skill instead. For prose that is n
 
 ## Prerequisites
 
-The skill calls two siblings: [show-me](./show-me.md) for the one visual and [asd-ste100](./asd-ste100.md) for the sentence pass. Publishing goes through the Atlassian MCP tools; without them the skill still produces a body you can paste.
+The skill calls two siblings: [show-me](./show-me.md) for the one visual and [asd-ste100](./asd-ste100.md) for the sentence pass. Publishing goes through the `twg` CLI when it is installed and logged in, and through the Atlassian MCP tools otherwise. Without either, the skill still produces a body you can paste.
 
 ## Two readers, one card
 
