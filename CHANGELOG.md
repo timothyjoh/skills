@@ -1,5 +1,11 @@
 # timothyjoh-skills
 
+## 0.9.1
+
+### Patch Changes
+
+- [`6937b29`](https://github.com/timothyjoh/skills/commit/6937b29ad283413ae73e9cf71fe4c26c44f5596d) Thanks [@timothyjoh](https://github.com/timothyjoh)! - jira-writing and explain-pr now prefer the `twg` CLI for Jira reads and writes when it is installed, and fall back to the Atlassian MCP tools when it is not.
+
 ## 0.9.0
 
 ### Minor Changes
