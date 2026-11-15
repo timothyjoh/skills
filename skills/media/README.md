@@ -1,6 +1,6 @@
 # Media
 
-Producing audio, narrated walkthroughs and videos: text-to-speech engines, narrated documents, multi-voice stories, browser tours, side-by-side video builds.
+Producing audio, narrated walkthroughs and videos: text-to-speech engines, narrated documents, multi-voice stories, browser tours, 3D motion graphics, side-by-side video builds.
 
 ## User-invoked
 
@@ -15,4 +15,5 @@ Model- or user-reachable (rich trigger phrasing so the model can reach for them)
 - **[narrate-doc](./narrate-doc/SKILL.md)**: Turn Markdown, HTML (Notion exports included), Word or PDF into a narrated page: local Kokoro TTS, the paragraph being read is highlighted, the document's comments are read in other voices, and the listener adds comments that export as Markdown.
 - **[storytime](./storytime/SKILL.md)**: Render a story as a multi-voice MP3: tag the prose by speaker, cast a local voice per character, stitch with ffmpeg. Depends on `tts-voice` beside it.
 - **[browser-tour](./browser-tour/SKILL.md)**: Drive Claude-in-Chrome through a narrated, pausing tour: research, product wizard, plan narration, or post-implementation demo. Optional audio via `tts-voice` beside it.
+- **[threejs-3d-styles](./threejs-3d-styles/SKILL.md)**: Make a short 3D motion-graphic video in three.js, built entirely in code, in one of 37 ready-made styles from Futurepedia's 3D Style Atlas: storyboard first, then a self-contained HTML player and an optional MP4.
 - **[tts-voice](./tts-voice/SKILL.md)**: Free local text-to-speech with voice cloning from reference WAVs (Chatterbox under the hood). Needs a local Chatterbox install.

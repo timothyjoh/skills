@@ -22,6 +22,8 @@
     "browser-tour",
     "tts-voice",
     "narrate-doc",
+    "threejs",
+    "threejs-3d-styles",
     "video",
     "video-lineup",
     "development",
@@ -43,6 +45,7 @@
     "./skills/media/browser-tour",
     "./skills/media/tts-voice",
     "./skills/media/video-lineup",
+    "./skills/media/threejs-3d-styles",
     "./skills/development/t3-handoff",
     "./skills/development/t3-report",
     "./skills/development/explain-pr"
