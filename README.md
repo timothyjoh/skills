@@ -57,7 +57,7 @@ The skills shell out to a few tools; each `SKILL.md` names what it needs under P
 
 - [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) on `PATH` (`brew install yt-dlp`). No YouTube API key.
 - Node 18 or newer for most bundled scripts; `t3-handoff` needs Node 24 or newer and a running T3 Code installation (0.0.45 or 0.0.46 and later); `explain-pr` needs Node 24 or newer, `git` and `gh`.
-- `ffmpeg` and `python3` for the media skills. `tts-voice` needs a local Chatterbox install; `narrate-doc` needs a Python 3.12 environment with Kokoro (its `requirements.txt`); `browser-tour` needs the Claude-in-Chrome extension; `threejs-3d-styles` needs Chromium or Chrome and `ffmpeg` only to render MP4s; `video-lineup` needs Node 24 or newer, `git`, `npm`, `uv`, Google Chrome, a running T3 Code and `t3-handoff`.
+- `ffmpeg` and `python3` for the media skills. `tts-voice` needs a local Chatterbox install; `narrate-doc` needs a Python 3.12 environment with Kokoro (its `requirements.txt`); `browser-tour` needs the Claude-in-Chrome extension; `cook` needs Node 18 or newer and `ffmpeg` for its side-by-side script; `threejs-3d-styles` needs Chromium or Chrome and `ffmpeg` only to render MP4s; `video-lineup` needs Node 24 or newer, `git`, `npm`, `uv`, Google Chrome, a running T3 Code and `t3-handoff`.
 
 ## Reference
 
@@ -97,6 +97,7 @@ Producing audio, narrated walkthroughs and videos.
 - **[narrate-doc](./skills/media/narrate-doc/SKILL.md)**: Turn a document (Markdown, HTML or a Notion export, Word, PDF) into a page that reads itself aloud with local Kokoro TTS, highlights the paragraph being read, reads the document's comments in other voices, and lets you pause and add your own comments, exported as Markdown. Docs: [narrate-doc](./docs/media/narrate-doc.md).
 - **[storytime](./skills/media/storytime/SKILL.md)**: Render a story as a multi-voice MP3: tag the prose by speaker, cast a local voice per character, stitch with ffmpeg. Docs: [storytime](./docs/media/storytime.md).
 - **[browser-tour](./skills/media/browser-tour/SKILL.md)**: Drive Claude-in-Chrome through a narrated, pausing tour: research, product wizard, plan narration, or post-implementation demo. Docs: [browser-tour](./docs/media/browser-tour.md).
+- **[cook](./skills/media/cook/SKILL.md)**: Run the Cook Loop for visual builds that must match reference images or videos: one intake, then long autonomous rounds of build, stills, zero-context critics and fixes against a numeric bar, with no final render before you approve. Vendored (MIT) from [Leonxlnx/cook](https://github.com/Leonxlnx/cook) by Leon Lin. Docs: [cook](./docs/media/cook.md).
 - **[threejs-3d-styles](./skills/media/threejs-3d-styles/SKILL.md)**: Make a short 3D motion-graphic video in three.js, built entirely in code, in one of 37 ready-made styles from [Futurepedia's 3D Style Atlas](https://www.futurepedia.io/resources/3d-style-atlas/view) (Futurepedia; not covered by this repo's MIT license). Storyboard first, then a self-contained HTML player and an optional MP4. Docs: [threejs-3d-styles](./docs/media/threejs-3d-styles.md).
 - **[tts-voice](./skills/media/tts-voice/SKILL.md)**: Free local text-to-speech with voice cloning, Chatterbox under the hood. Needs a local Chatterbox install. Docs: [tts-voice](./docs/media/tts-voice.md).
 

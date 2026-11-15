@@ -1,0 +1,3 @@
+interface:
+  display_name: "Cook"
+  short_description: "Long autonomous loop to match a visual build to references"
