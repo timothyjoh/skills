@@ -1,5 +1,39 @@
 # timothyjoh-skills
 
+## 0.10.0
+
+### Minor Changes
+
+- [#9](https://github.com/timothyjoh/skills/pull/9) [`009fbd4`](https://github.com/timothyjoh/skills/commit/009fbd44cbaba57ce841799fddef5a8a0246c8cb) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Vendor `cook` by Leon Lin from [Leonxlnx/cook](https://github.com/Leonxlnx/cook) (MIT), a model-invoked media skill for visual builds that must match reference images or videos.
+
+  - One intake with every question and a default, then long autonomous rounds: build, render stills at fixed shots, compare side by side, score with zero-context critics, fix the weakest part, log the round.
+  - A numeric bar per dimension, calibrated against your own estimates, and a time floor for demos.
+  - No final render before you approve the stills.
+  - Vendored unmodified at commit `b23cac6`; `ORIGIN.md` records the source and license.
+
+- [`98339be`](https://github.com/timothyjoh/skills/commit/98339bee1caccc7073509bed5b47c74b8a568973) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Add `explainer-video`, a model-invoked media skill: make a narrated, captioned explainer video drawn entirely in code with Remotion and three.js, in one or more of 21 styles, at any aspect ratio.
+
+  - 21 style files: paper and print (cut-paper collage, paper shadowbox, construction paper, editorial collage, woodblock print, watercolour, retro-futurism), illustration and cartoon (painted anime, TV cartoon, quirky absurd, flat vector science, ink scroll, cartoon 3D), 3D and cinematic (toy brick, pixel diorama, neon megacity, raymarched sci-fi, holographic 3D, map desk), and motion graphics (mono motion graphics, data 3D). Looks adapted from AI Samson's Claude Video Prompt Library; styles that used an image model there are rebuilt to be drawn in code.
+  - With no style named, the agent recommends two to four and asks you to pick one or more. Several picks render from one script, narration and shot list, plus a side-by-side MP4 and a local HTML page that plays them in sync.
+  - A Remotion project template with a word-keyed timeline, captions that show digits while the voice says the words, canvas and shader helpers, and a film pass for three.js (bloom, depth of field, grade, grain, letterbox).
+  - Local narration with Kokoro and word timings from whisper.cpp aligned to the script; music and effects synthesised in code from a small score file per style, mixed 20 dB under the voice.
+  - After each finished render it offers to delete the project's `node_modules` (about 1.5 GB) and reinstalls it before the next change.
+
+- [`9c42ab2`](https://github.com/timothyjoh/skills/commit/9c42ab2336c58dd6d6b58b0f7b811e954ff635bf) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Add `moss-image`, a model-invoked media skill that makes images locally on an Apple Silicon Mac with MOSS-Image through [moss-image-mac](https://github.com/abhishekaryan23/moss-image-mac) by abhishekaryan23 (MIT), installed from vitaliyhan's fork at a pinned commit.
+
+  - Six tools: text to image, text and objects placed in boxes, transparent cutouts, inpainting, restyling, and a backend check.
+  - Uses the `moss-image` MCP tools when the session has them, otherwise a bundled script that calls the same tools with the same arguments and loads the models once per batch.
+  - `check` reports the platform and install; `install` clones a pinned commit and runs its checksum-verified setup (about 10 GB), only after the user agrees.
+  - The agent opens every image and checks spelling and unrequested text before it reports the result.
+
+- [#8](https://github.com/timothyjoh/skills/pull/8) [`15c3743`](https://github.com/timothyjoh/skills/commit/15c37438d7edb388734db1b7ecf8fc3cfcd40295) Thanks [@timothyjoh](https://github.com/timothyjoh)! - Add `threejs-3d-styles`, a model-invoked media skill: make a short 3D motion-graphic video in three.js, built entirely in code, in one of 37 ready-made styles from Futurepedia's 3D Style Atlas.
+
+  - Each style ships its style card and complete reference animation; the agent keeps the look and rebuilds the story around your content.
+  - The agent picks the best-fitting style from a table of what each one is good for, or uses the style you name.
+  - A storyboard of key-frame stills comes first. The build is one self-contained HTML player with sound, plus an MP4 when Chromium and ffmpeg are available.
+  - Voiceover mode times every visual to an SRT or word-level timestamps and ducks the effects under the narration.
+  - The styles, reference sources and rendering kits are Futurepedia's work and are not covered by this repo's MIT license; see the skill's `ORIGIN.md`.
+
 ## 0.9.1
 
 ### Patch Changes
