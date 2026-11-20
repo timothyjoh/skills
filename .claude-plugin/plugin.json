@@ -1,7 +1,7 @@
 {
   "name": "timothyjoh-skills",
   "version": "0.9.1",
-  "description": "Timothy Johnson's agent skills: turn channels and playlists into knowledge, explain ideas visually, produce narrated audio, build one video brief with several video skills side by side, delegate work to T3 Code project agents, and explain PRs as checked briefs.",
+  "description": "Timothy Johnson's agent skills: turn channels and playlists into knowledge, explain ideas visually, produce narrated audio, make images locally, build one video brief with several video skills side by side, delegate work to T3 Code project agents, and explain PRs as checked briefs.",
   "author": {
     "name": "Timothy Johnson",
     "url": "https://github.com/timothyjoh"
@@ -21,6 +21,8 @@
     "media",
     "browser-tour",
     "tts-voice",
+    "moss-image",
+    "image-generation",
     "narrate-doc",
     "threejs",
     "threejs-3d-styles",
@@ -45,6 +47,7 @@
     "./skills/media/storytime",
     "./skills/media/browser-tour",
     "./skills/media/tts-voice",
+    "./skills/media/moss-image",
     "./skills/media/video-lineup",
     "./skills/media/threejs-3d-styles",
     "./skills/media/cook",

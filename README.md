@@ -57,7 +57,7 @@ The skills shell out to a few tools; each `SKILL.md` names what it needs under P
 
 - [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) on `PATH` (`brew install yt-dlp`). No YouTube API key.
 - Node 18 or newer for most bundled scripts; `t3-handoff` needs Node 24 or newer and a running T3 Code installation (0.0.45 or 0.0.46 and later); `explain-pr` needs Node 24 or newer, `git` and `gh`.
-- `ffmpeg` and `python3` for the media skills. `tts-voice` needs a local Chatterbox install; `narrate-doc` needs a Python 3.12 environment with Kokoro (its `requirements.txt`); `browser-tour` needs the Claude-in-Chrome extension; `cook` needs Node 18 or newer and `ffmpeg` for its side-by-side script; `threejs-3d-styles` needs Chromium or Chrome and `ffmpeg` only to render MP4s; `video-lineup` needs Node 24 or newer, `git`, `npm`, `uv`, Google Chrome, a running T3 Code and `t3-handoff`.
+- `ffmpeg` and `python3` for the media skills. `tts-voice` needs a local Chatterbox install; `narrate-doc` needs a Python 3.12 environment with Kokoro (its `requirements.txt`); `browser-tour` needs the Claude-in-Chrome extension; `cook` needs Node 18 or newer and `ffmpeg` for its side-by-side script; `threejs-3d-styles` needs Chromium or Chrome and `ffmpeg` only to render MP4s; `moss-image` needs an Apple Silicon Mac and about 15 GB of free disk for its install; `video-lineup` needs Node 24 or newer, `git`, `npm`, `uv`, Google Chrome, a running T3 Code and `t3-handoff`.
 
 ## Reference
 
@@ -86,7 +86,7 @@ Explaining things: to a reader who is lost, or to one who needs a picture.
 
 ### Media
 
-Producing audio, narrated walkthroughs and videos.
+Producing audio, images, narrated walkthroughs and videos.
 
 **User-invoked**
 
@@ -99,6 +99,7 @@ Producing audio, narrated walkthroughs and videos.
 - **[browser-tour](./skills/media/browser-tour/SKILL.md)**: Drive Claude-in-Chrome through a narrated, pausing tour: research, product wizard, plan narration, or post-implementation demo. Docs: [browser-tour](./docs/media/browser-tour.md).
 - **[cook](./skills/media/cook/SKILL.md)**: Run the Cook Loop for visual builds that must match reference images or videos: one intake, then long autonomous rounds of build, stills, zero-context critics and fixes against a numeric bar, with no final render before you approve. Vendored (MIT) from [Leonxlnx/cook](https://github.com/Leonxlnx/cook) by Leon Lin. Docs: [cook](./docs/media/cook.md).
 - **[threejs-3d-styles](./skills/media/threejs-3d-styles/SKILL.md)**: Make a short 3D motion-graphic video in three.js, built entirely in code, in one of 37 ready-made styles from [Futurepedia's 3D Style Atlas](https://www.futurepedia.io/resources/3d-style-atlas/view) (Futurepedia; not covered by this repo's MIT license). Storyboard first, then a self-contained HTML player and an optional MP4. Docs: [threejs-3d-styles](./docs/media/threejs-3d-styles.md).
+- **[moss-image](./skills/media/moss-image/SKILL.md)**: Make images locally on an Apple Silicon Mac with MOSS-Image: legible text, text and objects placed in boxes, transparent cutouts, inpainting and restyling. Drives [moss-image-mac](https://github.com/abhishekaryan23/moss-image-mac) by abhishekaryan23 (MIT), from [vitaliyhan's fork](https://github.com/vitaliyhan/moss-image-mac) at a pinned commit, installed only with your agreement, and checks every image for misspellings and stray text. Docs: [moss-image](./docs/media/moss-image.md).
 - **[tts-voice](./skills/media/tts-voice/SKILL.md)**: Free local text-to-speech with voice cloning, Chatterbox under the hood. Needs a local Chatterbox install. Docs: [tts-voice](./docs/media/tts-voice.md).
 
 ### Development

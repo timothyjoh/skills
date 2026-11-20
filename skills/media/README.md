@@ -1,6 +1,6 @@
 # Media
 
-Producing audio, narrated walkthroughs and videos: text-to-speech engines, narrated documents, multi-voice stories, browser tours, 3D motion graphics, side-by-side video builds.
+Producing audio, images, narrated walkthroughs and videos: text-to-speech engines, local image generation, narrated documents, multi-voice stories, browser tours, 3D motion graphics, side-by-side video builds.
 
 ## User-invoked
 
@@ -17,4 +17,5 @@ Model- or user-reachable (rich trigger phrasing so the model can reach for them)
 - **[browser-tour](./browser-tour/SKILL.md)**: Drive Claude-in-Chrome through a narrated, pausing tour: research, product wizard, plan narration, or post-implementation demo. Optional audio via `tts-voice` beside it.
 - **[cook](./cook/SKILL.md)**: Run the Cook Loop for visual builds that must match reference images or videos: one intake, then long autonomous rounds of build, stills, zero-context critics and fixes against a numeric bar, with no final render before you approve. Vendored from [Leonxlnx/cook](https://github.com/Leonxlnx/cook) by Leon Lin (MIT).
 - **[threejs-3d-styles](./threejs-3d-styles/SKILL.md)**: Make a short 3D motion-graphic video in three.js, built entirely in code, in one of 37 ready-made styles from Futurepedia's 3D Style Atlas: storyboard first, then a self-contained HTML player and an optional MP4.
+- **[moss-image](./moss-image/SKILL.md)**: Make images locally on Apple Silicon with MOSS-Image (text in images, boxes, cutouts, inpainting, restyling), through the moss-image MCP tools or a bundled script. Needs a moss-image-mac install; it offers to install one.
 - **[tts-voice](./tts-voice/SKILL.md)**: Free local text-to-speech with voice cloning from reference WAVs (Chatterbox under the hood). Needs a local Chatterbox install.

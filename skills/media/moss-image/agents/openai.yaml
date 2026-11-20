@@ -1,0 +1,3 @@
+interface:
+  display_name: "MOSS Image"
+  short_description: "Local image generation on Apple Silicon"
