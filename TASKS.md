@@ -1,23 +1,33 @@
-# t3-handoff rewrite
+# explainer-video skill
 
-Decisions (2026-10-05): support V1 and V2 adapters; child title `👋 <task name>`; T3 parent gets each progress report; live test against 0.0.46-nightly in an isolated T3 home.
+Decisions (2026-11-20): Remotion + three.js only; no image/video models, no Seedance/Higgsfield, no license text. Styles from AI Samson's Claude Video Prompt Library, rewritten in our own words; image-keyframe styles rebuilt as code-drawn. Narration: kokoro-js; word timings: whisper.cpp via @remotion/install-whisper-cpp. No style given: ask user to pick one or more; several styles render side by side.
 
-- [x] Read current delegate-t3-agent skill and scripts
-- [x] Confirm 0.0.45 is V1 and 0.0.46 (nightly) is V2
-- [x] Map V2 WebSocket protocol, title generation, DB schema (subagent; verify evidence)
-- [x] Start isolated 0.0.46-nightly server (scratch T3CODE_HOME, separate port)
-- [x] Rename skill folder to t3-handoff (git mv), update name, openai.yaml, title text
-- [x] Split client into V1 and V2 adapters behind one interface; detect protocol
-- [x] Session naming: `👋 <task name>`, required `--title`, lock against auto-title
-- [x] New child skill (t3-report): cadence, format, marker block, fallback text
-- [x] Parent side: `progress` extraction, `watch` emitting progress lines, T3-parent relay of each report
-- [x] Handoff prompt: drop inline reporting rules, point at t3-report with coordinator's reporting brief (`--report-brief`)
-- [x] Reports delivered as `cat <<'T3_REPORT'` command (text-only reports were lost to thinking blocks on Sonnet 5.5 low); V2 live: 3/3 reports streamed
-- [x] Offline tests for V2 adapter, naming, progress parsing, relay
-- [x] Live test against nightly: start, progress, wait, reply, T3-parent relay
-- [x] Live check against 0.0.45 (V1) in an isolated home (not the real ~/.t3)
-- [x] README (top + bucket), plugin.json, docs/development pages (both skills), changeset
-- [x] Remove old symlinks, run scripts/link-skills.sh
-- [x] `claude plugin validate . --strict` (fails only on pre-existing root CLAUDE.md warning, same on clean HEAD), em-dash check, skill-quality pass
-- [x] Isolated V1 0.0.45 server on 3798 (running) for V1 regression
-- [x] Stop isolated servers, clean scratch
+- [x] Transcript + prompt library captured (scratchpad)
+- [x] Branch `add-explainer-video`
+- [x] Remotion template (aspect/fps/duration props, timeline, captions, audio tracks)
+- [x] scripts: new-project, narrate (TTS + word timings), synth (music + sfx WAV), compare (side-by-side)
+- [x] Smoke test: scaffold, narrate, synth, render SVG + three.js + ShaderPass styles, compare (24 s for 3 films + compare)
+  - found: @react-three/postprocessing EffectComposer renders black under Remotion -> wrote lib/FilmPass.tsx, dropped the deps
+  - found: whisper token-level output is word pieces -> align script words to whisper letter stream
+  - found: peak-normalised music sat ~11 dB under voice -> RMS-normalise music and voice to -18 dBFS
+- [x] Re-test scaffold from clean template: 16:9, silent mode, estimate timings, tsc, compare (1920x596)
+- [x] SKILL.md + references (script, kit, techniques, audio)
+- [x] Style catalogue + 21 style files (2 by me, 19 by 3 subagents)
+- [x] Review style files: sections, score vocabulary, anchors, fonts, banned names, 9-word overlap with source (spec fragments only)
+- [x] agents/openai.yaml, bucket README, top README, plugin.json, docs page, changeset
+- [x] Validate: plugin validate (same pre-existing failures as HEAD), em-dash check, link-skills.sh
+- [x] Step 10: after every finished render, ask to delete node_modules (recommended); reinstall before changes
+- [ ] Commit, PR (waiting for Tim)
+- [x] Behavioural eval: two subagents built cut-paper-collage and flat-vector-science from their style files (tire explainer); both passed still checks
+
+# Tire-change explainer (2026-11-20)
+
+Project: ~/wrk/explainers/change-a-tire, 9:16, medium (~45 s), styles cut-paper-collage + flat-vector-science.
+
+- [x] Styles, aspect, length picked by Tim
+- [x] Fact-check steps (AAA, Firestone, Michelin, KBB, The Drive, TrueCar, Progressive, O'Reilly)
+- [x] Scaffold + install
+- [x] script.json, shots.md, narrate
+- [x] Build cut-paper-collage scene + score (subagent), stills checked
+- [x] Build flat-vector-science scene + score (subagent), stills checked
+- [x] Render films + compare, ffprobe checks, report

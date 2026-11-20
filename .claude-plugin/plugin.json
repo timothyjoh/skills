@@ -27,6 +27,8 @@
     "threejs",
     "threejs-3d-styles",
     "cook",
+    "explainer-video",
+    "remotion",
     "video",
     "video-lineup",
     "development",
@@ -51,6 +53,7 @@
     "./skills/media/video-lineup",
     "./skills/media/threejs-3d-styles",
     "./skills/media/cook",
+    "./skills/media/explainer-video",
     "./skills/development/t3-handoff",
     "./skills/development/t3-report",
     "./skills/development/explain-pr"

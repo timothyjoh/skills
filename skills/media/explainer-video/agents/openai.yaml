@@ -1,0 +1,3 @@
+interface:
+  display_name: "Explainer Video"
+  short_description: "Narrated explainer videos drawn in code with Remotion and three.js, in 21 styles"

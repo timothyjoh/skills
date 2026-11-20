@@ -1,0 +1,12 @@
+{
+  "title": "Untitled explainer",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "durationInFrames": 450,
+  "styles": [],
+  "narration": true,
+  "captions": true,
+  "mix": { "musicDb": -20, "duckDb": -4, "sfxDb": -6 },
+  "audio": {}
+}
